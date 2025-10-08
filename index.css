@@ -1073,28 +1073,6 @@ textarea:focus {
   }
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .bg-gray-100 {
-    background-color: #1f2937 !important;
-  }
-  
-  .bg-white {
-    background-color: #374151 !important;
-  }
-  
-  .text-gray-800 {
-    color: #f9fafb !important;
-  }
-  
-  .text-gray-600 {
-    color: #d1d5db !important;
-  }
-  
-  .border-gray-300 {
-    border-color: #4b5563 !important;
-  }
-}
 
 /* Print styles */
 @media print {
