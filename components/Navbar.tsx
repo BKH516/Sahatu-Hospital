@@ -48,7 +48,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout, onMenuClick, userFullName, ac
               <img 
                 src={`${import.meta.env.BASE_URL}assets/sihatelogo.png`}
                 alt="صحتي لوجو" 
-                className="h-16 w-auto object-contain"
+                className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto object-contain"
               />
             </div>
             

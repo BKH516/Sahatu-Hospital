@@ -284,8 +284,8 @@ const ReservationsView: React.FC = () => {
             <div className="space-y-4">
               {filteredReservations.map((reservation) => (
                 <Card key={reservation.id} className="hover:shadow-lg transition-shadow duration-300">
-                  <CardContent className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <CardContent className="p-3 sm:p-4 md:p-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                       {/* Patient Info */}
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
@@ -342,11 +342,11 @@ const ReservationsView: React.FC = () => {
                             {getStatusText(reservation.status)}
                           </span>
                           
-                          <div className="flex gap-2 mt-2">
+                          <div className="flex flex-col xs:flex-row gap-1.5 sm:gap-2 mt-2">
                               <Button
                                 size="sm"
                                 onClick={() => handleUpdateReservationStatus(reservation.id, 'confirmed')}
-                                className="bg-green-600 hover:bg-green-700 text-white"
+                                className="bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm w-full xs:w-auto"
                               >
                                 <CheckCircleIcon className="w-3 h-3 mr-1" />
                                 تأكيد
@@ -355,6 +355,7 @@ const ReservationsView: React.FC = () => {
                                 size="sm"
                                 variant="destructive"
                                 onClick={() => handleUpdateReservationStatus(reservation.id, 'cancelled')}
+                                className="text-xs sm:text-sm w-full xs:w-auto"
                               >
                                 <XCircleIcon className="w-3 h-3 mr-1" />
                                 إلغاء

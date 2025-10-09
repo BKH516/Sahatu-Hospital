@@ -129,44 +129,44 @@ const ReservationsHistory: React.FC = () => {
       )}
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-green-200 dark:border-green-800">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-green-600 dark:text-green-400">الحجوزات المؤكدة</p>
-                <p className="text-3xl font-bold text-green-700 dark:text-green-300 mt-2">{confirmedCount}</p>
+          <CardContent className="p-3 sm:p-4 md:p-6">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-green-600 dark:text-green-400">الحجوزات المؤكدة</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-green-700 dark:text-green-300 mt-1 sm:mt-2">{confirmedCount}</p>
               </div>
-              <div className="w-12 h-12 bg-green-200 dark:bg-green-800/50 rounded-full flex items-center justify-center">
-                <CheckCircleIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-200 dark:bg-green-800/50 rounded-full flex items-center justify-center flex-shrink-0">
+                <CheckCircleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border-red-200 dark:border-red-800">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-red-600 dark:text-red-400">الحجوزات الملغاة</p>
-                <p className="text-3xl font-bold text-red-700 dark:text-red-300 mt-2">{cancelledCount}</p>
+          <CardContent className="p-3 sm:p-4 md:p-6">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-red-600 dark:text-red-400">الحجوزات الملغاة</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-red-700 dark:text-red-300 mt-1 sm:mt-2">{cancelledCount}</p>
               </div>
-              <div className="w-12 h-12 bg-red-200 dark:bg-red-800/50 rounded-full flex items-center justify-center">
-                <XCircleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-200 dark:bg-red-800/50 rounded-full flex items-center justify-center flex-shrink-0">
+                <XCircleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 dark:text-red-400" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-800">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-blue-600 dark:text-blue-400">إجمالي الإيرادات</p>
-                <p className="text-3xl font-bold text-blue-700 dark:text-blue-300 mt-2">{totalRevenue.toFixed(0)} ل.س</p>
+          <CardContent className="p-3 sm:p-4 md:p-6">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-blue-600 dark:text-blue-400">إجمالي الإيرادات</p>
+                <p className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-blue-700 dark:text-blue-300 mt-1 sm:mt-2 truncate">{totalRevenue.toFixed(0)} ل.س</p>
               </div>
-              <div className="w-12 h-12 bg-blue-200 dark:bg-blue-800/50 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-200 dark:bg-blue-800/50 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -332,8 +332,8 @@ const ReservationsHistory: React.FC = () => {
             <div className="space-y-4">
               {filteredReservations.map((reservation) => (
                 <Card key={reservation.id} className="hover:shadow-lg transition-shadow duration-300">
-                  <CardContent className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <CardContent className="p-3 sm:p-4 md:p-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                       {/* Patient Info */}
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">

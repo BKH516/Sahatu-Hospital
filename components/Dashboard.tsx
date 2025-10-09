@@ -244,20 +244,20 @@ const ServicesView: React.FC = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full border-collapse border border-gray-200 dark:border-gray-700">
+                        <div className="overflow-x-auto -mx-6 px-6 sm:mx-0 sm:px-0">
+                            <table className="w-full min-w-full border-collapse border border-gray-200 dark:border-gray-700">
                                 <thead>
                                     <tr className="bg-gray-50 dark:bg-gray-800">
-                                        <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300">
+                                        <th className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
                                             اسم الخدمة
                                         </th>
-                                        <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300">
+                                        <th className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
                                             السعر (ل.س)
                                         </th>
-                                        <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300">
+                                        <th className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
                                             السعة (مريض)
                                         </th>
-                                        <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-300">
+                                        <th className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-center font-semibold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
                                             الإجراءات
                                         </th>
                                     </tr>
@@ -265,16 +265,16 @@ const ServicesView: React.FC = () => {
                                 <tbody>
                                     {services.map(service => (
                                         <tr key={service.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                                            <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-gray-900 dark:text-gray-100 font-medium">
+                                            <td className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-gray-900 dark:text-gray-100 font-medium text-xs sm:text-sm">
                                                 {service.service_name}
                                             </td>
-                                            <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-blue-600 dark:text-blue-400 font-semibold">
+                                            <td className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-blue-600 dark:text-blue-400 font-semibold text-xs sm:text-sm">
                                                 {service.price}
                                             </td>
-                                            <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-gray-700 dark:text-gray-300">
+                                            <td className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
                                                 {service.capacity}
                                             </td>
-                                            <td className="border border-gray-200 dark:border-gray-700 px-4 py-3">
+                                            <td className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3">
                                                 <ActionButtons
                                                     onEdit={() => { setEditingService(service); setIsModalOpen(true); }}
                                                     onDelete={() => handleDeleteClick(service.id)}
@@ -537,14 +537,14 @@ const ScheduleView: React.FC = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full border-collapse border border-gray-200 dark:border-gray-700">
+                        <div className="overflow-x-auto -mx-6 px-6 sm:mx-0 sm:px-0">
+                            <table className="w-full min-w-full border-collapse border border-gray-200 dark:border-gray-700">
                                 <thead>
                                     <tr className="bg-gray-50 dark:bg-gray-800">
-                                        <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300">
+                                        <th className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
                                             يوم العمل
                                         </th>
-                                        <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-300">
+                                        <th className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-center font-semibold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
                                             الإجراءات
                                         </th>
                                     </tr>
@@ -552,17 +552,17 @@ const ScheduleView: React.FC = () => {
                                 <tbody>
                                     {schedules.map(schedule => (
                                         <tr key={schedule.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                                            <td className="border border-gray-200 dark:border-gray-700 px-4 py-3">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                                                        <CalendarIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
+                                            <td className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3">
+                                                <div className="flex items-center gap-2 sm:gap-3">
+                                                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                                                        <CalendarIcon className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 dark:text-green-400" />
                                                     </div>
-                                                    <span className="font-semibold text-gray-800 dark:text-gray-100">
+                                                    <span className="font-semibold text-gray-800 dark:text-gray-100 text-xs sm:text-sm">
                                                         {daysOfWeekArabic[schedule.day_of_week.charAt(0).toUpperCase() + schedule.day_of_week.slice(1)] || schedule.day_of_week}
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="border border-gray-200 dark:border-gray-700 px-4 py-3">
+                                            <td className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3">
                                                 <ActionButtons
                                                     onDelete={() => handleDeleteDayClick(schedule.id)}
                                                     showEdit={false}

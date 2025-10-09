@@ -130,7 +130,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-100 dark:bg-cyan-950 rounded-full opacity-10 blur-3xl"></div>
       </div>
 
-      <Card className="w-full max-w-6xl h-[95vh] shadow-2xl border border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl overflow-hidden transform transition-all duration-300 hover:shadow-3xl relative z-10 grid grid-cols-1 lg:grid-cols-2">
+      <Card className="w-full max-w-6xl h-auto min-h-[90vh] lg:h-[95vh] max-h-screen shadow-2xl border border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl overflow-hidden transform transition-all duration-300 hover:shadow-3xl relative z-10 grid grid-cols-1 lg:grid-cols-2">
         {/* Left Side - Illustration/Image */}
         <div className="hidden lg:flex bg-gradient-to-br from-teal-600 via-cyan-600 to-blue-600 p-8 flex-col justify-center items-center relative overflow-hidden">
           {/* Decorative Pattern */}
@@ -262,7 +262,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           {isRegister ? (
               <form onSubmit={handleRegister} className="space-y-2">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {/* Hospital Name */}
                   <div className="relative">
                     <div className="absolute left-3 top-[34px] text-teal-600 dark:text-teal-400 pointer-events-none z-10">
@@ -332,7 +332,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                   </div>
 
                   {/* Address - Full Width */}
-                  <div className="relative col-span-2">
+                  <div className="relative col-span-full">
                     <div className="absolute left-3 top-[34px] text-teal-600 dark:text-teal-400 pointer-events-none z-10">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
