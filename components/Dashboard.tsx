@@ -229,9 +229,11 @@ const ServicesView: React.FC = () => {
                         <Button 
                             onClick={() => { setEditingService(null); setIsModalOpen(true); }} 
                             section="services"
+                            className="text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10"
                         >
-                            <PlusCircleIcon className="w-4 h-4 mr-2" />
-                            إضافة خدمة جديدة
+                            <PlusCircleIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                            <span className="hidden xs:inline">إضافة خدمة جديدة</span>
+                            <span className="xs:hidden">إضافة</span>
                         </Button>
                     </div>
                 </CardHeader>
@@ -508,8 +510,8 @@ const ScheduleView: React.FC = () => {
                         </select>
                     </div>
                             <div className="flex items-end">
-                                <Button type="submit" section="hospital" className="w-full md:w-auto">
-                                    <PlusCircleIcon className="w-4 h-4 mr-2" />
+                                <Button type="submit" section="hospital" className="w-full md:w-auto text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10">
+                                    <PlusCircleIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                                     إضافة اليوم
                                 </Button>
                             </div>
