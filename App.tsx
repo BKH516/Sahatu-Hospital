@@ -1,5 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { useApp } from './context/AppContext';
+import { Toaster } from 'react-hot-toast';
+import { toasterConfig } from './utils';
 
 // Lazy load components
 const Auth = lazy(() => import('./components/Auth'));
@@ -27,13 +29,16 @@ const App: React.FC = () => {
   };
 
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      {isAuthenticated ? (
-        <Dashboard onLogout={handleLogout} />
-      ) : (
-        <Auth onAuthSuccess={handleAuthSuccess} />
-      )}
-    </Suspense>
+    <>
+      <Toaster {...toasterConfig} />
+      <Suspense fallback={<LoadingFallback />}>
+        {isAuthenticated ? (
+          <Dashboard onLogout={handleLogout} />
+        ) : (
+          <Auth onAuthSuccess={handleAuthSuccess} />
+        )}
+      </Suspense>
+    </>
   );
 };
 

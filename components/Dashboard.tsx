@@ -10,6 +10,9 @@ import ReservationsHistory from './ReservationsHistory';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { showToast } from '../utils';
+import ConfirmDialog from './ui/ConfirmDialog';
+import ActionButtons from './ui/ActionButtons';
 
 type View = 'overview' | 'profile' | 'services' | 'schedule' | 'reservations' | 'history';
 
@@ -28,11 +31,11 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
         const formData = new FormData(e.currentTarget);
         try {
             await api.updateProfile(formData);
-            alert("تم تحديث الملف الشخصي بنجاح");
+            showToast.success("تم تحديث الملف الشخصي بنجاح");
             setIsEditing(false);
             refreshData();
         } catch (error: any) {
-            alert(`خطأ: ${error.message}`);
+            showToast.error(`خطأ: ${error.message}`);
         } finally {
             setLoading(false);
         }
@@ -140,6 +143,10 @@ const ServicesView: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingService, setEditingService] = useState<HospitalService | null>(null);
+    const [confirmDelete, setConfirmDelete] = useState<{ isOpen: boolean; serviceId: number | null }>({ 
+        isOpen: false, 
+        serviceId: null 
+    });
 
     const fetchServices = useCallback(async () => {
         setLoading(true);
@@ -148,7 +155,7 @@ const ServicesView: React.FC = () => {
             setServices(data);
         } catch (error) {
             console.error(error);
-            alert('فشل في جلب الخدمات');
+            showToast.error('فشل في جلب الخدمات');
         } finally {
             setLoading(false);
         }
@@ -158,14 +165,24 @@ const ServicesView: React.FC = () => {
         fetchServices();
     }, [fetchServices]);
 
-    const handleDelete = async (id: number) => {
-        if (window.confirm('هل أنت متأكد من حذف هذه الخدمة؟')) {
-            try {
-                await api.deleteService(id);
-                fetchServices();
-            } catch (error) {
-                alert('فشل في حذف الخدمة');
-            }
+    const handleDeleteClick = (id: number) => {
+        setConfirmDelete({ isOpen: true, serviceId: id });
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!confirmDelete.serviceId) return;
+        
+        const loadingToast = showToast.loading('جاري حذف الخدمة...');
+        try {
+            await api.deleteService(confirmDelete.serviceId);
+            showToast.dismiss(loadingToast);
+            showToast.success('تم حذف الخدمة بنجاح');
+            fetchServices();
+        } catch (error) {
+            showToast.dismiss(loadingToast);
+            showToast.error('فشل في حذف الخدمة');
+        } finally {
+            setConfirmDelete({ isOpen: false, serviceId: null });
         }
     };
     
@@ -175,6 +192,7 @@ const ServicesView: React.FC = () => {
         const price = formData.get('price');
         const capacity = formData.get('capacity');
 
+        const loadingToast = showToast.loading(editingService ? 'جاري تحديث الخدمة...' : 'جاري إضافة الخدمة...');
         try {
             if (editingService) {
                 if(price && capacity) {
@@ -183,11 +201,14 @@ const ServicesView: React.FC = () => {
             } else {
                 await api.addService(formData);
             }
+            showToast.dismiss(loadingToast);
+            showToast.success(editingService ? 'تم تحديث الخدمة بنجاح' : 'تم إضافة الخدمة بنجاح');
             fetchServices();
             setIsModalOpen(false);
             setEditingService(null);
         } catch (error: any) {
-            alert(`فشل في حفظ الخدمة: ${error.message}`);
+            showToast.dismiss(loadingToast);
+            showToast.error(`فشل في حفظ الخدمة: ${error.message}`);
         }
     };
 
@@ -231,7 +252,7 @@ const ServicesView: React.FC = () => {
                                             اسم الخدمة
                                         </th>
                                         <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300">
-                                            السعر (ريال)
+                                            السعر (ل.س)
                                         </th>
                                         <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300">
                                             السعة (مريض)
@@ -254,24 +275,11 @@ const ServicesView: React.FC = () => {
                                                 {service.capacity}
                                             </td>
                                             <td className="border border-gray-200 dark:border-gray-700 px-4 py-3">
-                                                <div className="flex justify-center gap-2">
-                                                    <Button 
-                                                        onClick={() => { setEditingService(service); setIsModalOpen(true); }} 
-                                                        variant="outline" 
-                                                        size="sm"
-                                                    >
-                                                        <EditIcon className="w-4 h-4 mr-1" />
-                                                        تعديل
-                                                    </Button>
-                                                    <Button 
-                                                        onClick={() => handleDelete(service.id)} 
-                                                        variant="destructive" 
-                                                        size="sm"
-                                                    >
-                                                        <TrashIcon className="w-4 h-4 mr-1" />
-                                                        حذف
-                                                    </Button>
-                                                </div>
+                                                <ActionButtons
+                                                    onEdit={() => { setEditingService(service); setIsModalOpen(true); }}
+                                                    onDelete={() => handleDeleteClick(service.id)}
+                                                    size="sm"
+                                                />
                                             </td>
                                         </tr>
                                     ))}
@@ -307,7 +315,7 @@ const ServicesView: React.FC = () => {
                                     />
                                 )}
                                 <Input
-                                    label="السعر (ريال)"
+                                    label="السعر (ل.س)"
                                     name="price"
                                     type="number"
                                     defaultValue={editingService?.price}
@@ -337,6 +345,18 @@ const ServicesView: React.FC = () => {
                     </Card>
                 </div>
             )}
+
+            {/* Confirm Delete Dialog */}
+            <ConfirmDialog
+                isOpen={confirmDelete.isOpen}
+                onClose={() => setConfirmDelete({ isOpen: false, serviceId: null })}
+                onConfirm={handleDeleteConfirm}
+                title="تأكيد حذف الخدمة"
+                description="هل أنت متأكد من حذف هذه الخدمة؟ لن تتمكن من التراجع عن هذا الإجراء."
+                confirmText="حذف"
+                cancelText="إلغاء"
+                type="danger"
+            />
         </div>
     );
 };
@@ -346,6 +366,10 @@ const ScheduleView: React.FC = () => {
     const [schedules, setSchedules] = useState<WorkSchedule[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [confirmDelete, setConfirmDelete] = useState<{ isOpen: boolean; dayId: number | null }>({ 
+        isOpen: false, 
+        dayId: null 
+    });
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const daysOfWeekArabic: { [key: string]: string } = {
         'Sunday': 'الأحد', 'Monday': 'الاثنين', 'Tuesday': 'الثلاثاء', 'Wednesday': 'الأربعاء', 
@@ -376,26 +400,40 @@ const ScheduleView: React.FC = () => {
         const formData = new FormData(e.currentTarget);
         const day = formData.get('day_of_week') as string;
         if (schedules.find(s => s.day_of_week.toLowerCase() === day.toLowerCase())) {
-            alert('هذا اليوم مضاف بالفعل.');
+            showToast.warning('هذا اليوم مضاف بالفعل.');
             return;
         }
+        const loadingToast = showToast.loading('جاري إضافة اليوم...');
         try {
             await api.addWorkSchedule(day);
+            showToast.dismiss(loadingToast);
+            showToast.success('تم إضافة اليوم بنجاح');
             fetchSchedules();
             (e.target as HTMLFormElement).reset();
         } catch (error: any) {
-            alert(`فشل في إضافة اليوم: ${error.message}`);
+            showToast.dismiss(loadingToast);
+            showToast.error(`فشل في إضافة اليوم: ${error.message}`);
         }
     };
     
-    const handleDeleteDay = async (id: number) => {
-        if(window.confirm('هل أنت متأكد من حذف هذا اليوم؟')) {
-            try {
-                await api.deleteWorkSchedule(id);
-                fetchSchedules();
-            } catch (error: any) {
-                 alert(`فشل في حذف اليوم: ${error.message}`);
-            }
+    const handleDeleteDayClick = (id: number) => {
+        setConfirmDelete({ isOpen: true, dayId: id });
+    };
+
+    const handleDeleteDayConfirm = async () => {
+        if (!confirmDelete.dayId) return;
+        
+        const loadingToast = showToast.loading('جاري حذف اليوم...');
+        try {
+            await api.deleteWorkSchedule(confirmDelete.dayId);
+            showToast.dismiss(loadingToast);
+            showToast.success('تم حذف اليوم بنجاح');
+            fetchSchedules();
+        } catch (error: any) {
+            showToast.dismiss(loadingToast);
+            showToast.error(`فشل في حذف اليوم: ${error.message}`);
+        } finally {
+            setConfirmDelete({ isOpen: false, dayId: null });
         }
     };
 
@@ -525,16 +563,11 @@ const ScheduleView: React.FC = () => {
                                                 </div>
                                             </td>
                                             <td className="border border-gray-200 dark:border-gray-700 px-4 py-3">
-                                                <div className="flex justify-center">
-                                                    <Button 
-                                                        onClick={() => handleDeleteDay(schedule.id)} 
-                                                        variant="destructive" 
-                                                        size="sm"
-                                                    >
-                                                        <TrashIcon className="w-4 h-4 mr-1" />
-                                                        حذف
-                                                    </Button>
-                                                </div>
+                                                <ActionButtons
+                                                    onDelete={() => handleDeleteDayClick(schedule.id)}
+                                                    showEdit={false}
+                                                    size="sm"
+                                                />
                                             </td>
                                         </tr>
                                     ))}
@@ -552,6 +585,18 @@ const ScheduleView: React.FC = () => {
                     )}
                 </CardContent>
             </Card>
+
+            {/* Confirm Delete Dialog */}
+            <ConfirmDialog
+                isOpen={confirmDelete.isOpen}
+                onClose={() => setConfirmDelete({ isOpen: false, dayId: null })}
+                onConfirm={handleDeleteDayConfirm}
+                title="تأكيد حذف يوم العمل"
+                description="هل أنت متأكد من حذف هذا اليوم من جدول العمل؟"
+                confirmText="حذف"
+                cancelText="إلغاء"
+                type="danger"
+            />
         </div>
     );
 };

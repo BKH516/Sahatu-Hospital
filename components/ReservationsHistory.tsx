@@ -163,7 +163,7 @@ const ReservationsHistory: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-blue-600 dark:text-blue-400">إجمالي الإيرادات</p>
-                <p className="text-3xl font-bold text-blue-700 dark:text-blue-300 mt-2">{totalRevenue.toFixed(0)} ريال</p>
+                <p className="text-3xl font-bold text-blue-700 dark:text-blue-300 mt-2">{totalRevenue.toFixed(0)} ل.س</p>
               </div>
               <div className="w-12 h-12 bg-blue-200 dark:bg-blue-800/50 rounded-full flex items-center justify-center">
                 <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -358,7 +358,7 @@ const ReservationsHistory: React.FC = () => {
                             {reservation.service_name}
                           </p>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {reservation.price} ريال
+                            {reservation.price} ل.س
                           </p>
                         </div>
                       </div>

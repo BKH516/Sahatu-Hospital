@@ -35,36 +35,43 @@ export const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({ pa
   const label = PasswordSecurity.getStrengthLabel(score);
   
   return (
-    <div className="mt-2 space-y-2">
+    <div className="mt-1.5 space-y-1.5">
       {/* Strength bar */}
       <div className="flex items-center gap-2">
-        <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
           <div
             className={`h-full transition-all duration-300 ${getColor()}`}
             style={{ width: `${percentage}%` }}
           />
         </div>
-        <span className={`text-sm font-medium ${getTextColor()}`}>
+        <span className={`text-xs font-medium ${getTextColor()} whitespace-nowrap`}>
           {label}
         </span>
       </div>
       
-      {/* Feedback messages */}
+      {/* Feedback messages - أكثر إحكاماً */}
       {feedback.length > 0 && !isStrong && (
-        <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-          {feedback.map((item, index) => (
-            <li key={index} className="flex items-start gap-2">
-              <span className="text-orange-500 mt-0.5">•</span>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="bg-orange-50 dark:bg-orange-900/20 rounded-md px-2 py-1.5 border border-orange-200 dark:border-orange-800">
+          <ul className="text-xs text-gray-700 dark:text-gray-300 space-y-0.5">
+            {feedback.slice(0, 3).map((item, index) => (
+              <li key={index} className="flex items-start gap-1.5">
+                <span className="text-orange-500 text-[10px] mt-0.5">●</span>
+                <span className="leading-tight">{item}</span>
+              </li>
+            ))}
+            {feedback.length > 3 && (
+              <li className="text-[10px] text-orange-600 dark:text-orange-400 mt-1">
+                +{feedback.length - 3} نصيحة أخرى...
+              </li>
+            )}
+          </ul>
+        </div>
       )}
       
       {/* Success message */}
       {isStrong && (
-        <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <div className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 rounded-md px-2 py-1 border border-green-200 dark:border-green-800">
+          <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
           </svg>
           <span className="font-medium">كلمة مرور قوية!</span>

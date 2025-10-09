@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Button } from './ui/button';
 import { CalendarIcon, ClockIcon, UserIcon, CheckCircleIcon, XCircleIcon, AlertCircleIcon } from './ui/icons';
 import { getAllReservations, getReservationsByStatus, updateReservationStatus, Reservation } from '../services/statsService';
+import { showToast } from '../utils';
 
 // استخدام interface من statsService
 
@@ -34,16 +35,19 @@ const ReservationsView: React.FC = () => {
   }, [fetchReservations]);
 
   const handleUpdateReservationStatus = async (id: number, status: string) => {
+    const loadingToast = showToast.loading('جاري تحديث حالة الحجز...');
     try {
       const ok = await updateReservationStatus(id, status);
+      showToast.dismiss(loadingToast);
       if (ok) {
         await fetchReservations();
-        alert(`تم تحديث حالة الحجز إلى: ${getStatusText(status)}`);
+        showToast.success(`تم تحديث حالة الحجز إلى: ${getStatusText(status)}`);
       } else {
-        alert('فشل في تحديث حالة الحجز');
+        showToast.error('فشل في تحديث حالة الحجز');
       }
     } catch (e) {
-      alert('حدث خطأ أثناء تحديث حالة الحجز');
+      showToast.dismiss(loadingToast);
+      showToast.error('حدث خطأ أثناء تحديث حالة الحجز');
     }
   };
 
@@ -306,7 +310,7 @@ const ReservationsView: React.FC = () => {
                             {reservation.service_name}
                           </p>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {reservation.price} ريال
+                            {reservation.price} ل.س
                           </p>
                         </div>
                       </div>

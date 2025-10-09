@@ -9,6 +9,7 @@ import { CSRFProtection } from '../utils/csrfProtection';
 import { PasswordSecurity } from '../utils/passwordSecurity';
 import { PasswordStrengthMeter } from './PasswordStrengthMeter';
 import ForgotPassword from './ForgotPassword';
+import { showToast } from '../utils';
 
 interface AuthProps {
   onAuthSuccess: (token: string, remember?: boolean) => void;
@@ -60,15 +61,17 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
 
     try {
       await registerHospital(formData);
-      setSuccess('تم التسجيل بنجاح! يمكنك الآن تسجيل الدخول.');
+      showToast.success('تم التسجيل بنجاح! يمكنك الآن تسجيل الدخول.', 3000);
       setTimeout(() => {
-      setIsRegister(false);
+        setIsRegister(false);
         setSuccess(null);
         setPassword(''); // Clear password state
-      }, 2000);
+      }, 3000);
     } catch (err: any) {
       // Sanitize error message before displaying
-      setError(SanitizationUtils.sanitizeText(err.message || 'حدث خطأ أثناء التسجيل'));
+      const errorMessage = SanitizationUtils.sanitizeText(err.message || 'حدث خطأ أثناء التسجيل');
+      showToast.error(errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -87,17 +90,19 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
     
     try {
       const data = await loginWithPassword(formData);
-      setSuccess('تم تسجيل الدخول بنجاح!');
+      showToast.success('تم تسجيل الدخول بنجاح!', 2000);
       
       // Generate CSRF token for secure requests
       CSRFProtection.generateToken();
       
       setTimeout(() => {
-      onAuthSuccess(data.token, rememberMe);
-      }, 800);
+        onAuthSuccess(data.token, rememberMe);
+      }, 1000);
     } catch (err: any) {
       // Sanitize error message before displaying
-      setError(SanitizationUtils.sanitizeText(err.message || 'حدث خطأ أثناء تسجيل الدخول'));
+      const errorMessage = SanitizationUtils.sanitizeText(err.message || 'حدث خطأ أثناء تسجيل الدخول');
+      showToast.error(errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -125,7 +130,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-100 dark:bg-cyan-950 rounded-full opacity-10 blur-3xl"></div>
       </div>
 
-      <Card className="w-full max-w-6xl max-h-[95vh] shadow-2xl border border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl overflow-hidden transform transition-all duration-300 hover:shadow-3xl relative z-10 grid grid-cols-1 lg:grid-cols-2">
+      <Card className="w-full max-w-6xl h-[95vh] shadow-2xl border border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl overflow-hidden transform transition-all duration-300 hover:shadow-3xl relative z-10 grid grid-cols-1 lg:grid-cols-2">
         {/* Left Side - Illustration/Image */}
         <div className="hidden lg:flex bg-gradient-to-br from-teal-600 via-cyan-600 to-blue-600 p-8 flex-col justify-center items-center relative overflow-hidden">
           {/* Decorative Pattern */}
@@ -211,9 +216,9 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
         </div>
 
         {/* Right Side - Form */}
-        <div className="flex flex-col max-h-[95vh] lg:max-h-none">
+        <div className="flex flex-col h-full overflow-hidden">
         {/* Header with gradient */}
-        <div className="bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 p-4 relative overflow-hidden flex-shrink-0">
+        <div className="bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 p-3 relative overflow-hidden flex-shrink-0">
           <div className="absolute inset-0 bg-grid-white/10 bg-[size:20px_20px]"></div>
           <CardHeader className="text-center space-y-2 relative z-10 p-0">
           <div className="flex justify-center">
@@ -232,7 +237,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
         </CardHeader>
         </div>
         
-        <CardContent className="p-4 space-y-3 overflow-y-auto flex-1">
+        <CardContent className="p-3 space-y-2.5 overflow-y-auto flex-1 scrollbar-thin">
           {/* Success Message */}
           {success && (
             <div className="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 px-3 py-2 rounded-lg text-center flex items-center justify-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300 text-sm" role="alert">
@@ -256,8 +261,8 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
           {/* Form Section with Animation */}
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           {isRegister ? (
-              <form onSubmit={handleRegister} className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+              <form onSubmit={handleRegister} className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
                   {/* Hospital Name */}
                   <div className="relative">
                     <div className="absolute left-3 top-[34px] text-teal-600 dark:text-teal-400 pointer-events-none z-10">
@@ -434,8 +439,8 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
               </Button>
           </form>
         ) : (
-              <form onSubmit={handleLogin} className="space-y-3">
-              <div className="space-y-3">
+              <form onSubmit={handleLogin} className="space-y-2">
+              <div className="space-y-2">
                   {/* Email */}
                   <div className="relative">
                     <div className="absolute left-3 top-[34px] text-teal-600 dark:text-teal-400 pointer-events-none z-10">
