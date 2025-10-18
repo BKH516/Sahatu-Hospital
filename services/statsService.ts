@@ -1,5 +1,5 @@
 import { API_CONFIG, API_ENDPOINTS, TokenManager, STORAGE_KEYS } from '../config/apiConfig';
-import { WorkSchedule } from '../types';
+import { WorkSchedule, HospitalReservation } from '../types';
 
 // Server availability tracking
 let isServerAvailable = true;
@@ -17,7 +17,10 @@ const getHospitalId = (): number | null => {
   }
 };
 
-// Generic API fetch client with error handling
+// Helper function to delay execution
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Generic API fetch client with error handling and retry logic
 async function apiFetch<T>(path: string, options: RequestInit = {}, fallback?: T): Promise<T> {
   const token = TokenManager.getToken();
   const headers = new Headers(options.headers || {});
@@ -34,41 +37,62 @@ async function apiFetch<T>(path: string, options: RequestInit = {}, fallback?: T
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.REQUEST_TIMEOUT);
-    
-    const response = await fetch(`${API_CONFIG.BASE_URL}${path}`, { 
-      ...options, 
-      headers,
-      signal: controller.signal 
-    });
-    
-    clearTimeout(timeoutId);
-    isServerAvailable = true;
-    
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({ message: `HTTP ${response.status}` }));
-      throw new Error(err.message || 'API error');
+  let lastError: any;
+  
+  // Retry loop with exponential backoff
+  for (let attempt = 0; attempt <= API_CONFIG.MAX_RETRIES; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.REQUEST_TIMEOUT);
+      
+      const response = await fetch(`${API_CONFIG.BASE_URL}${path}`, { 
+        ...options, 
+        headers,
+        signal: controller.signal 
+      });
+      
+      clearTimeout(timeoutId);
+      isServerAvailable = true;
+      
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ message: `HTTP ${response.status}` }));
+        throw new Error(err.message || 'API error');
+      }
+      
+      const contentType = response.headers.get('content-type');
+      if (response.status === 204 || !contentType || !contentType.includes('application/json')) {
+        return null as T;
+      }
+      
+      return (await response.json()) as T;
+    } catch (e: any) {
+      lastError = e;
+      
+      // Don't retry on authentication errors (401) or client errors (4xx except 429)
+      if (e.message?.includes('401') || (e.message?.includes('HTTP 4') && !e.message?.includes('429'))) {
+        break;
+      }
+      
+      // If this is not the last attempt, wait before retrying
+      if (attempt < API_CONFIG.MAX_RETRIES) {
+        // Exponential backoff: wait longer with each attempt
+        const waitTime = API_CONFIG.RETRY_DELAY * Math.pow(2, attempt);
+        console.log(`Retry attempt ${attempt + 1}/${API_CONFIG.MAX_RETRIES} for ${path} after ${waitTime}ms`);
+        await delay(waitTime);
+      }
     }
-    
-    const contentType = response.headers.get('content-type');
-    if (response.status === 204 || !contentType || !contentType.includes('application/json')) {
-      return null as T;
-    }
-    
-    return (await response.json()) as T;
-  } catch (e) {
-    isServerAvailable = false;
-    
-    // If fallback is provided, use it instead of throwing
-    if (fallback !== undefined) {
-      console.warn(`API call failed for ${path}, using fallback`, e);
-      return fallback;
-    }
-    
-    throw e;
   }
+  
+  // All retries failed
+  isServerAvailable = false;
+  
+  // If fallback is provided, use it instead of throwing
+  if (fallback !== undefined) {
+    console.warn(`API call failed for ${path} after ${API_CONFIG.MAX_RETRIES} retries, using fallback`, lastError);
+    return fallback;
+  }
+  
+  throw lastError;
 }
 
 export const getServerStatus = () => isServerAvailable;
@@ -130,6 +154,7 @@ export interface Service {
   name: string;
   price: string;
   duration_minutes: number;
+  capacity?: number;
   created_at: string;
   updated_at: string;
 }
@@ -179,7 +204,13 @@ export const getAllReservations = async (): Promise<Reservation[]> => {
     {},
     []
   );
-  return reservations || [];
+  
+  // The API already returns data in the correct format, just handle N/A values
+  return (reservations || []).map(res => ({
+    ...res,
+    user_name: res.user_name === 'N/A' ? 'غير متوفر' : res.user_name,
+    service_name: res.service_name === 'N/A' ? 'غير متوفر' : res.service_name
+  }));
 };
 
 // Fetch reservations by status with fallback
@@ -187,6 +218,21 @@ export const getReservationsByStatus = async (status: string): Promise<Reservati
   // Hospital API doesn't support filtering by status, so we get all and filter
   const allReservations = await getAllReservations();
   return allReservations.filter(r => r.status === status);
+};
+
+// Fetch pending reservations
+export const getPendingReservations = async (): Promise<Reservation[]> => {
+  return getReservationsByStatus('pending');
+};
+
+// Confirm a reservation
+export const confirmReservation = async (id: number): Promise<void> => {
+  await updateReservationStatus(id, 'confirmed');
+};
+
+// Cancel a reservation
+export const cancelReservation = async (id: number): Promise<void> => {
+  await updateReservationStatus(id, 'cancelled');
 };
 
 // Fetch reservations by date range with fallback

@@ -246,56 +246,97 @@ const ServicesView: React.FC = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="overflow-x-auto -mx-6 px-6 sm:mx-0 sm:px-0">
-                            <table className="w-full min-w-full border-collapse border border-gray-200 dark:border-gray-700">
-                                <thead>
-                                    <tr className="bg-gray-50 dark:bg-gray-800">
-                                        <th className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
-                                            اسم الخدمة
-                                        </th>
-                                        <th className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
-                                            السعر (ل.س)
-                                        </th>
-                                        <th className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
-                                            السعة (مريض)
-                                        </th>
-                                        <th className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-center font-semibold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
-                                            الإجراءات
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {services.map(service => (
-                                        <tr key={service.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                                            <td className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-gray-900 dark:text-gray-100 font-medium text-xs sm:text-sm">
-                                                {service.service_name}
-                                            </td>
-                                            <td className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-blue-600 dark:text-blue-400 font-semibold text-xs sm:text-sm">
-                                                {service.price}
-                                            </td>
-                                            <td className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
-                                                {service.capacity}
-                                            </td>
-                                            <td className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3">
+                        <>
+                            {/* Mobile View - Cards */}
+                            <div className="block md:hidden space-y-3">
+                                {services.map(service => (
+                                    <Card key={service.id} className="border-r-4 border-r-blue-500">
+                                        <CardContent className="p-3 space-y-3">
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm mb-1 truncate">
+                                                        {service.service_name}
+                                                    </h3>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
+                                                            💰 {service.price} ل.س
+                                                        </span>
+                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                                                            👥 {service.capacity} مريض
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2 pt-2">
                                                 <ActionButtons
                                                     onEdit={() => { setEditingService(service); setIsModalOpen(true); }}
                                                     onDelete={() => handleDeleteClick(service.id)}
                                                     size="sm"
                                                 />
-                                            </td>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                                {services.length === 0 && (
+                                    <div className="text-center p-8">
+                                        <BriefcaseIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                                        <p className="text-gray-500 dark:text-gray-400">لم تتم إضافة خدمات بعد.</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Desktop View - Table */}
+                            <div className="hidden md:block overflow-x-auto">
+                                <table className="w-full min-w-full border-collapse border border-gray-200 dark:border-gray-700">
+                                    <thead>
+                                        <tr className="bg-gray-50 dark:bg-gray-800">
+                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-sm">
+                                                اسم الخدمة
+                                            </th>
+                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-sm">
+                                                السعر (ل.س)
+                                            </th>
+                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-sm">
+                                                السعة (مريض)
+                                            </th>
+                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-300 text-sm">
+                                                الإجراءات
+                                            </th>
                                         </tr>
-                                    ))}
-                                    {services.length === 0 && (
-                                        <tr>
-                                            <td colSpan={4} className="border border-gray-200 dark:border-gray-700 px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                                                <BriefcaseIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                                                <p>لم تتم إضافة خدمات بعد.</p>
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        {services.map(service => (
+                                            <tr key={service.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-gray-900 dark:text-gray-100 font-medium text-sm">
+                                                    {service.service_name}
+                                                </td>
+                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-blue-600 dark:text-blue-400 font-semibold text-sm">
+                                                    {service.price}
+                                                </td>
+                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-gray-700 dark:text-gray-300 text-sm">
+                                                    {service.capacity}
+                                                </td>
+                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-3">
+                                                    <ActionButtons
+                                                        onEdit={() => { setEditingService(service); setIsModalOpen(true); }}
+                                                        onDelete={() => handleDeleteClick(service.id)}
+                                                        size="sm"
+                                                    />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {services.length === 0 && (
+                                            <tr>
+                                                <td colSpan={4} className="border border-gray-200 dark:border-gray-700 px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                                    <BriefcaseIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                                                    <p>لم تتم إضافة خدمات بعد.</p>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </>
                     )}
                 </CardContent>
             </Card>
@@ -539,51 +580,85 @@ const ScheduleView: React.FC = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="overflow-x-auto -mx-6 px-6 sm:mx-0 sm:px-0">
-                            <table className="w-full min-w-full border-collapse border border-gray-200 dark:border-gray-700">
-                                <thead>
-                                    <tr className="bg-gray-50 dark:bg-gray-800">
-                                        <th className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
-                                            يوم العمل
-                                        </th>
-                                        <th className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-center font-semibold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
-                                            الإجراءات
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {schedules.map(schedule => (
-                                        <tr key={schedule.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                                            <td className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3">
-                                                <div className="flex items-center gap-2 sm:gap-3">
-                                                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                                                        <CalendarIcon className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 dark:text-green-400" />
+                        <>
+                            {/* Mobile View - Cards */}
+                            <div className="block md:hidden space-y-3">
+                                {schedules.map(schedule => (
+                                    <Card key={schedule.id} className="border-r-4 border-r-green-500">
+                                        <CardContent className="p-3">
+                                            <div className="flex items-center justify-between gap-2">
+                                                <div className="flex items-center gap-3 flex-1">
+                                                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                                                        <CalendarIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
                                                     </div>
-                                                    <span className="font-semibold text-gray-800 dark:text-gray-100 text-xs sm:text-sm">
+                                                    <span className="font-bold text-gray-900 dark:text-gray-100 text-sm">
                                                         {daysOfWeekArabic[schedule.day_of_week.charAt(0).toUpperCase() + schedule.day_of_week.slice(1)] || schedule.day_of_week}
                                                     </span>
                                                 </div>
-                                            </td>
-                                            <td className="border border-gray-200 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-2 sm:py-3">
                                                 <ActionButtons
                                                     onDelete={() => handleDeleteDayClick(schedule.id)}
                                                     showEdit={false}
                                                     size="sm"
                                                 />
-                                            </td>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                                {schedules.length === 0 && (
+                                    <div className="text-center p-8">
+                                        <CalendarIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                                        <p className="text-gray-500 dark:text-gray-400">لم تتم إضافة أيام عمل بعد.</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Desktop View - Table */}
+                            <div className="hidden md:block overflow-x-auto">
+                                <table className="w-full min-w-full border-collapse border border-gray-200 dark:border-gray-700">
+                                    <thead>
+                                        <tr className="bg-gray-50 dark:bg-gray-800">
+                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-sm">
+                                                يوم العمل
+                                            </th>
+                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-300 text-sm">
+                                                الإجراءات
+                                            </th>
                                         </tr>
-                                    ))}
-                                    {schedules.length === 0 && (
-                                        <tr>
-                                            <td colSpan={2} className="border border-gray-200 dark:border-gray-700 px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                                                <CalendarIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                                                <p>لم تتم إضافة أيام عمل بعد.</p>
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        {schedules.map(schedule => (
+                                            <tr key={schedule.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                                                            <CalendarIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
+                                                        </div>
+                                                        <span className="font-semibold text-gray-800 dark:text-gray-100 text-sm">
+                                                            {daysOfWeekArabic[schedule.day_of_week.charAt(0).toUpperCase() + schedule.day_of_week.slice(1)] || schedule.day_of_week}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-3">
+                                                    <ActionButtons
+                                                        onDelete={() => handleDeleteDayClick(schedule.id)}
+                                                        showEdit={false}
+                                                        size="sm"
+                                                    />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {schedules.length === 0 && (
+                                            <tr>
+                                                <td colSpan={2} className="border border-gray-200 dark:border-gray-700 px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                                    <CalendarIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                                                    <p>لم تتم إضافة أيام عمل بعد.</p>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </>
                     )}
                 </CardContent>
             </Card>
