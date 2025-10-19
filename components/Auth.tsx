@@ -201,18 +201,46 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
               </div>
             </div>
 
-            {/* Testimonial */}
-            <div className="p-5 xl:p-6 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-700">
+            {/* Admin Registration Notice */}
+            <div className="p-5 xl:p-6 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 backdrop-blur-sm rounded-xl border-2 border-amber-200 dark:border-amber-700">
               <div className="flex items-start gap-3">
-                <svg className="w-6 h-6 text-teal-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                </svg>
-                <div>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm xl:text-base mb-2 leading-relaxed">
-                    منصة رائعة ساعدتنا في تحسين إدارة الحجوزات
-                  </p>
-                  <p className="text-xs xl:text-sm font-semibold text-gray-900 dark:text-white">د. أحمد محمد</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">مستشفى النور</p>
+                <div className="w-10 h-10 xl:w-12 xl:h-12 bg-amber-100 dark:bg-amber-800/50 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 xl:w-6 xl:h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-sm xl:text-base font-bold text-amber-900 dark:text-amber-100 mb-2">
+                    📋 كيفية التسجيل في المنصة
+                  </h3>
+                  <div className="space-y-2">
+                    <div className="flex items-start gap-2">
+                      <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">1</span>
+                      <p className="text-xs xl:text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
+                        تواصل مع الإدارة وأطلب إنشاء حساب لمستشفاك
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">2</span>
+                      <p className="text-xs xl:text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
+                        ستستلم <span className="font-bold text-amber-900 dark:text-amber-100">رمزاً فريداً</span> خاصاً بمستشفاك
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">3</span>
+                      <p className="text-xs xl:text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
+                        استخدم الرمز الفريد عند إنشاء الحساب
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-amber-200 dark:border-amber-700">
+                    <p className="text-[10px] xl:text-xs text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                      </svg>
+                      <span>الرمز الفريد يضمن أمان وموثوقية التسجيل</span>
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -308,31 +336,61 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                         type="text"
                         required
                         placeholder="مستشفى الأمل"
+                        minLength={3}
+                        maxLength={100}
+                        title="يرجى إدخال اسم المستشفى (3-100 حرف)"
                       />
-                      <Input
-                        label="الرمز الفريد"
-                        name="unique_code"
-                        type="text"
-                        required
-                        placeholder="HOSP-001"
-                      />
+                      <div>
+                        <Input
+                          label="الرمز الفريد"
+                          name="unique_code"
+                          type="text"
+                          required
+                          placeholder="HOSP-001"
+                          pattern="[A-Z0-9\-]+"
+                          title="أدخل الرمز الذي استلمته من الإدارة"
+                          minLength={4}
+                          maxLength={20}
+                        />
+                        <p className="mt-1 text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                          </svg>
+                          الرمز المُرسل من الإدارة
+                        </p>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <Input
-                        label="البريد الإلكتروني"
-                        name="email"
-                        type="email"
-                        required
-                        placeholder="info@hospital.com"
-                      />
-                      <Input
-                        label="رقم الهاتف"
-                        name="phone_number"
-                        type="text"
-                        required
-                        placeholder="+966 50 123 4567"
-                      />
+                      <div>
+                        <Input
+                          label="البريد الإلكتروني"
+                          name="email"
+                          type="email"
+                          required
+                          placeholder="info@hospital.com"
+                          autoComplete="email"
+                          title="يرجى إدخال بريد إلكتروني صحيح"
+                        />
+                        <p className="mt-1 text-[10px] text-gray-500 dark:text-gray-400">
+                          مثال: info@hospital.com
+                        </p>
+                      </div>
+                      <div>
+                        <Input
+                          label="رقم الهاتف"
+                          name="phone_number"
+                          type="tel"
+                          required
+                          placeholder="+966 50 123 4567"
+                          autoComplete="tel"
+                          pattern="[+]?[0-9\s\-]+"
+                          title="يرجى إدخال رقم هاتف صحيح (أرقام فقط)"
+                        />
+                        <p className="mt-1 text-[10px] text-gray-500 dark:text-gray-400">
+                          مثال: +966501234567
+                        </p>
+                      </div>
                     </div>
 
                     <Input
@@ -341,6 +399,9 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                       type="text"
                       required
                       placeholder="شارع الملك فهد، الرياض"
+                      minLength={10}
+                      maxLength={200}
+                      title="يرجى إدخال عنوان كامل (10-200 حرف)"
                     />
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

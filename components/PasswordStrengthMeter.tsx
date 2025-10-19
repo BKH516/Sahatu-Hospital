@@ -13,7 +13,7 @@ export const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({ pa
   if (!password) return null;
   
   const { score, feedback, isStrong } = PasswordSecurity.checkStrength(password);
-  const percentage = (score / 5) * 100;
+  const percentage = (score / 6) * 100;
   
   // Determine color based on score
   const getColor = (): string => {

@@ -27,62 +27,58 @@ export class PasswordSecurity {
     const feedback: string[] = [];
     let score = 0;
     
-    // Length check (minimum 12 characters)
-    if (password.length >= 12) {
+    // Length check (minimum 8 characters) - مخفف من 12 إلى 8
+    if (password.length >= 8) {
       score++;
+      if (password.length >= 12) {
+        score++; // نقطة إضافية للطول الأكبر
+      }
     } else {
-      feedback.push('يجب أن تحتوي كلمة المرور على 12 حرف على الأقل');
+      feedback.push('يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل');
     }
     
-    // Uppercase letters
+    // Uppercase letters (optional but recommended)
     if (/[A-Z]/.test(password)) {
       score++;
     } else {
-      feedback.push('يجب أن تحتوي على حرف كبير على الأقل (A-Z)');
+      feedback.push('يُفضل أن تحتوي على حرف كبير (A-Z)');
     }
     
     // Lowercase letters
     if (/[a-z]/.test(password)) {
       score++;
     } else {
-      feedback.push('يجب أن تحتوي على حرف صغير على الأقل (a-z)');
+      feedback.push('يجب أن تحتوي على حرف صغير (a-z)');
     }
     
     // Numbers
     if (/\d/.test(password)) {
       score++;
     } else {
-      feedback.push('يجب أن تحتوي على رقم على الأقل (0-9)');
+      feedback.push('يجب أن تحتوي على رقم (0-9)');
     }
     
-    // Special characters
-    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    // Special characters or uppercase (one of them is enough)
+    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) || /[A-Z]/.test(password)) {
       score++;
-    } else {
-      feedback.push('يجب أن تحتوي على رمز خاص على الأقل (!@#$%...)');
     }
     
     // Check for common passwords
     const lowerPassword = password.toLowerCase();
     if (this.commonPasswords.some(common => lowerPassword.includes(common))) {
-      score = Math.max(0, score - 2);
-      feedback.push('كلمة المرور شائعة جداً، استخدم كلمة مرور أكثر تعقيداً');
+      score = Math.max(0, score - 1);
+      feedback.push('كلمة المرور شائعة، حاول استخدام كلمة أكثر تعقيداً');
     }
     
-    // Check for character repetition
-    if (/(.)\1{2,}/.test(password)) {
-      feedback.push('تجنب تكرار نفس الحرف أكثر من مرتين');
-    }
-    
-    // Check for sequential characters
-    if (/(012|123|234|345|456|567|678|789|abc|bcd|cde|def)/i.test(password)) {
-      feedback.push('تجنب استخدام أحرف أو أرقام متسلسلة');
+    // Check for character repetition (warning only)
+    if (/(.)\1{3,}/.test(password)) {
+      feedback.push('تجنب تكرار نفس الحرف أكثر من 3 مرات');
     }
     
     return {
       score,
       feedback,
-      isStrong: score >= 5 && feedback.length === 0
+      isStrong: score >= 4 && password.length >= 8
     };
   }
   
@@ -93,19 +89,20 @@ export class PasswordSecurity {
    */
   static isValid(password: string): boolean {
     const strength = this.checkStrength(password);
-    return strength.score >= 4; // At least 4 out of 5 requirements
+    return strength.score >= 3 && password.length >= 8; // At least 3 points and 8 characters
   }
   
   /**
    * Get a human-readable strength label
-   * @param score - The password strength score (0-5)
+   * @param score - The password strength score (0-6)
    * @returns Label in Arabic
    */
   static getStrengthLabel(score: number): string {
     if (score <= 1) return 'ضعيفة جداً';
     if (score <= 2) return 'ضعيفة';
-    if (score <= 3) return 'متوسطة';
+    if (score <= 3) return 'مقبولة';
     if (score <= 4) return 'جيدة';
+    if (score <= 5) return 'قوية';
     return 'قوية جداً';
   }
   
