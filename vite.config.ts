@@ -25,8 +25,32 @@ export default defineConfig(({ mode }) => {
           '@': path.resolve(__dirname, '.'),
         }
       },
+      css: {
+        devSourcemap: true,
+        preprocessorOptions: {
+          css: {
+            charset: false
+          }
+        }
+      },
+      build: {
+        cssCodeSplit: false,
+        rollupOptions: {
+          output: {
+            assetFileNames: (assetInfo) => {
+              if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+                return 'assets/css/[name]-[hash][extname]';
+              }
+              return 'assets/[name]-[hash][extname]';
+            }
+          }
+        }
+      },
       server: {
-        headers: securityHeaders
+        headers: securityHeaders,
+        hmr: {
+          overlay: false
+        }
       },
       preview: {
         headers: securityHeaders

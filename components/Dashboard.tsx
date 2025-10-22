@@ -154,7 +154,6 @@ const ServicesView: React.FC = () => {
             const data = await api.getServices();
             setServices(data);
         } catch (error) {
-            console.error(error);
             showToast.error('فشل في جلب الخدمات');
         } finally {
             setLoading(false);
@@ -426,7 +425,6 @@ const ScheduleView: React.FC = () => {
             const data = await api.getWorkSchedules();
             setSchedules(data);
         } catch (error) {
-            console.error('Error fetching schedules:', error);
             setError('فشل في جلب جدول العمل. تأكد من اتصال الخادم.');
             setSchedules([]);
         } finally {
@@ -691,7 +689,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       const [accountData, hospitalData] = await api.getMe();
       setProfile({ account: accountData, hospital: hospitalData });
     } catch (error) {
-      console.error("Failed to fetch profile", error);
       onLogout(); // Logout on profile fetch failure
     } finally {
       setLoadingProfile(false);
@@ -706,7 +703,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     try {
         await api.logout();
     } catch(error){
-        console.error("Logout failed on server, logging out client-side.", error);
+        // Logout failed on server, logging out client-side
     } finally {
         onLogout();
     }

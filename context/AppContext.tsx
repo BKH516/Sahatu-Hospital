@@ -85,7 +85,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   useEffect(() => {
     const handleTokenExpired = () => {
       logout();
-      alert('انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.');
+      // Session expired, user needs to login again
     };
     
     window.addEventListener('token-expired', handleTokenExpired);

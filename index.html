@@ -16,7 +16,12 @@
          Add these in your production server configuration (nginx, apache, etc.) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
+    <!-- Fallback CSS for when Google Fonts fail -->
+    <link rel="stylesheet" href="/css/fallback.css" onerror="console.warn('Fallback CSS loaded due to Google Fonts failure')">
+    <!-- Error handler for resource loading failures -->
+    <script src="/js/error-handler.js" defer></script>
   <script type="importmap">
 {
   "imports": {

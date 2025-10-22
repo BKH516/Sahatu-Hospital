@@ -1,0 +1,23 @@
+/* Fallback CSS for when Google Fonts fail to load */
+@font-face {
+  font-family: 'Cairo-Fallback';
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: local('Segoe UI'), local('Tahoma'), local('Arial'), local('sans-serif');
+}
+
+/* Apply fallback font when Cairo is not available */
+body {
+  font-family: 'Cairo', 'Cairo-Fallback', 'Segoe UI', 'Tahoma', 'Arial', system-ui, sans-serif !important;
+}
+
+/* Ensure text remains readable even if fonts fail */
+* {
+  font-family: inherit;
+}
+
+/* Fallback for Arabic text */
+[dir="rtl"] {
+  font-family: 'Cairo', 'Cairo-Fallback', 'Segoe UI', 'Tahoma', 'Arial', system-ui, sans-serif !important;
+}

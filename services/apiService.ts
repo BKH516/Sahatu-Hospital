@@ -91,8 +91,8 @@ async function fetchApi<T>(
     return await response.json();
   } catch (error) {
     // If we have a fallback and the error is network-related, use it
-    if (fallback !== undefined && (error instanceof TypeError || error.name === 'AbortError')) {
-      console.warn(`API call failed for ${endpoint}, using fallback data`, error);
+    if (fallback !== undefined && (error instanceof TypeError || (error as Error).name === 'AbortError')) {
+      // API call failed, using fallback data
       return fallback;
     }
     
@@ -107,7 +107,7 @@ async function fetchApi<T>(
     }
     
     // Handle timeout
-    if (error.name === 'AbortError') {
+    if ((error as Error).name === 'AbortError') {
       throw new ApiError('Request timeout. Please try again.', 0, 'TIMEOUT');
     }
     

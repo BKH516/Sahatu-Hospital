@@ -1,5 +1,5 @@
 import { API_CONFIG, API_ENDPOINTS, TokenManager, STORAGE_KEYS } from '../config/apiConfig';
-import { WorkSchedule, HospitalReservation } from '../types';
+import { WorkSchedule } from '../types';
 
 // Server availability tracking
 let isServerAvailable = true;
@@ -17,10 +17,7 @@ const getHospitalId = (): number | null => {
   }
 };
 
-// Helper function to delay execution
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Generic API fetch client with error handling and retry logic
+// Generic API fetch client with error handling
 async function apiFetch<T>(path: string, options: RequestInit = {}, fallback?: T): Promise<T> {
   const token = TokenManager.getToken();
   const headers = new Headers(options.headers || {});
@@ -37,62 +34,41 @@ async function apiFetch<T>(path: string, options: RequestInit = {}, fallback?: T
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  let lastError: any;
-  
-  // Retry loop with exponential backoff
-  for (let attempt = 0; attempt <= API_CONFIG.MAX_RETRIES; attempt++) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.REQUEST_TIMEOUT);
-      
-      const response = await fetch(`${API_CONFIG.BASE_URL}${path}`, { 
-        ...options, 
-        headers,
-        signal: controller.signal 
-      });
-      
-      clearTimeout(timeoutId);
-      isServerAvailable = true;
-      
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({ message: `HTTP ${response.status}` }));
-        throw new Error(err.message || 'API error');
-      }
-      
-      const contentType = response.headers.get('content-type');
-      if (response.status === 204 || !contentType || !contentType.includes('application/json')) {
-        return null as T;
-      }
-      
-      return (await response.json()) as T;
-    } catch (e: any) {
-      lastError = e;
-      
-      // Don't retry on authentication errors (401) or client errors (4xx except 429)
-      if (e.message?.includes('401') || (e.message?.includes('HTTP 4') && !e.message?.includes('429'))) {
-        break;
-      }
-      
-      // If this is not the last attempt, wait before retrying
-      if (attempt < API_CONFIG.MAX_RETRIES) {
-        // Exponential backoff: wait longer with each attempt
-        const waitTime = API_CONFIG.RETRY_DELAY * Math.pow(2, attempt);
-        console.log(`Retry attempt ${attempt + 1}/${API_CONFIG.MAX_RETRIES} for ${path} after ${waitTime}ms`);
-        await delay(waitTime);
-      }
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.REQUEST_TIMEOUT);
+    
+    const response = await fetch(`${API_CONFIG.BASE_URL}${path}`, { 
+      ...options, 
+      headers,
+      signal: controller.signal 
+    });
+    
+    clearTimeout(timeoutId);
+    isServerAvailable = true;
+    
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({ message: `HTTP ${response.status}` }));
+      throw new Error(err.message || 'API error');
     }
+    
+    const contentType = response.headers.get('content-type');
+    if (response.status === 204 || !contentType || !contentType.includes('application/json')) {
+      return null as T;
+    }
+    
+    return (await response.json()) as T;
+  } catch (e) {
+    isServerAvailable = false;
+    
+    // If fallback is provided, use it instead of throwing
+    if (fallback !== undefined) {
+      // API call failed, using fallback
+      return fallback;
+    }
+    
+    throw e;
   }
-  
-  // All retries failed
-  isServerAvailable = false;
-  
-  // If fallback is provided, use it instead of throwing
-  if (fallback !== undefined) {
-    console.warn(`API call failed for ${path} after ${API_CONFIG.MAX_RETRIES} retries, using fallback`, lastError);
-    return fallback;
-  }
-  
-  throw lastError;
 }
 
 export const getServerStatus = () => isServerAvailable;
@@ -204,13 +180,7 @@ export const getAllReservations = async (): Promise<Reservation[]> => {
     {},
     []
   );
-  
-  // The API already returns data in the correct format, just handle N/A values
-  return (reservations || []).map(res => ({
-    ...res,
-    user_name: res.user_name === 'N/A' ? 'غير متوفر' : res.user_name,
-    service_name: res.service_name === 'N/A' ? 'غير متوفر' : res.service_name
-  }));
+  return reservations || [];
 };
 
 // Fetch reservations by status with fallback
@@ -315,7 +285,6 @@ export const calculateStats = async (): Promise<StatsData> => {
       averageServicePrice: averageServicePrice
     };
   } catch (error) {
-    console.error('Error calculating stats:', error);
     return DEFAULT_STATS;
   }
 };
@@ -338,7 +307,6 @@ export const getQuickStats = async (): Promise<Partial<StatsData>> => {
       totalServices: services.length
     };
   } catch (error) {
-    console.error('Error getting quick stats:', error);
     return {
       pendingReservations: 0,
       todayReservations: 0,
@@ -358,7 +326,6 @@ export const updateReservationStatus = async (id: number, status: string): Promi
     );
     return true;
   } catch (error) {
-    console.error('Error updating reservation status:', error);
     throw error;
   }
 };
@@ -432,7 +399,6 @@ export const getDashboardStats = async (): Promise<DashboardStats> => {
       }
     };
   } catch (error) {
-    console.error('Error getting dashboard stats:', error);
     return DEFAULT_DASHBOARD_STATS;
   }
 };
@@ -473,7 +439,6 @@ export const getStatsByPeriod = async (startDate: string, endDate: string): Prom
       averageServicePrice: averageServicePrice
     };
   } catch (error) {
-    console.error('Error getting stats by period:', error);
     return DEFAULT_STATS;
   }
 };

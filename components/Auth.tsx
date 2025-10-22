@@ -201,49 +201,51 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
               </div>
             </div>
 
-            {/* Admin Registration Notice */}
-            <div className="p-5 xl:p-6 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 backdrop-blur-sm rounded-xl border-2 border-amber-200 dark:border-amber-700">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 xl:w-12 xl:h-12 bg-amber-100 dark:bg-amber-800/50 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <svg className="w-5 h-5 xl:w-6 xl:h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-sm xl:text-base font-bold text-amber-900 dark:text-amber-100 mb-2">
-                    📋 كيفية التسجيل في المنصة
-                  </h3>
-                  <div className="space-y-2">
-                    <div className="flex items-start gap-2">
-                      <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">1</span>
-                      <p className="text-xs xl:text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
-                        تواصل مع الإدارة وأطلب إنشاء حساب لمستشفاك
-                      </p>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">2</span>
-                      <p className="text-xs xl:text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
-                        ستستلم <span className="font-bold text-amber-900 dark:text-amber-100">رمزاً فريداً</span> خاصاً بمستشفاك
-                      </p>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">3</span>
-                      <p className="text-xs xl:text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
-                        استخدم الرمز الفريد عند إنشاء الحساب
-                      </p>
-                    </div>
+            {/* Admin Registration Notice - يظهر فقط في صفحة إنشاء الحساب */}
+            {isRegister && (
+              <div className="p-5 xl:p-6 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 backdrop-blur-sm rounded-xl border-2 border-amber-200 dark:border-amber-700">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 xl:w-12 xl:h-12 bg-amber-100 dark:bg-amber-800/50 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 xl:w-6 xl:h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                   </div>
-                  <div className="mt-3 pt-3 border-t border-amber-200 dark:border-amber-700">
-                    <p className="text-[10px] xl:text-xs text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
-                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                      </svg>
-                      <span>الرمز الفريد يضمن أمان وموثوقية التسجيل</span>
-                    </p>
+                  <div className="flex-1">
+                    <h3 className="text-sm xl:text-base font-bold text-amber-900 dark:text-amber-100 mb-2">
+                      📋 كيفية التسجيل في المنصة
+                    </h3>
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2">
+                        <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">1</span>
+                        <p className="text-xs xl:text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
+                          تواصل مع الإدارة وأطلب إنشاء حساب لمستشفاك
+                        </p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">2</span>
+                        <p className="text-xs xl:text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
+                          ستستلم <span className="font-bold text-amber-900 dark:text-amber-100">رمزاً فريداً</span> خاصاً بمستشفاك
+                        </p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">3</span>
+                        <p className="text-xs xl:text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
+                          استخدم الرمز الفريد عند إنشاء الحساب
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-amber-200 dark:border-amber-700">
+                      <p className="text-[10px] xl:text-xs text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+                        <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                        </svg>
+                        <span>الرمز الفريد يضمن أمان وموثوقية التسجيل</span>
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* ========== RIGHT SIDE - FORM ========== */}
@@ -415,6 +417,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="••••••••"
                           className="pr-12"
+                          autoComplete="new-password"
                         />
                         <button
                           type="button"
@@ -443,6 +446,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                           required
                           placeholder="••••••••"
                           className="pr-12"
+                          autoComplete="new-password"
                         />
                         <button
                           type="button"
@@ -502,6 +506,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                         required
                         placeholder="••••••••"
                         className="pr-12"
+                        autoComplete="current-password"
                       />
                       <button
                         type="button"
@@ -564,6 +569,56 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                 )}
               </CardContent>
             </Card>
+
+            {/* قسم كيفية التسجيل - يظهر فقط في صفحة إنشاء الحساب على الشاشات الصغيرة */}
+            {isRegister && (
+              <div className="lg:hidden mt-4 sm:mt-6">
+                <Card className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-2 border-amber-200 dark:border-amber-700 shadow-lg">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-amber-100 dark:bg-amber-800/50 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <svg className="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-sm font-bold text-amber-900 dark:text-amber-100 mb-3">
+                          📋 كيفية التسجيل في المنصة
+                        </h3>
+                        <div className="space-y-2">
+                          <div className="flex items-start gap-2">
+                            <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">1</span>
+                            <p className="text-xs text-amber-800 dark:text-amber-200 leading-relaxed">
+                              تواصل مع الإدارة وأطلب إنشاء حساب لمستشفاك
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">2</span>
+                            <p className="text-xs text-amber-800 dark:text-amber-200 leading-relaxed">
+                              ستستلم <span className="font-bold text-amber-900 dark:text-amber-100">رمزاً فريداً</span> خاصاً بمستشفاك
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">3</span>
+                            <p className="text-xs text-amber-800 dark:text-amber-200 leading-relaxed">
+                              استخدم الرمز الفريد عند إنشاء الحساب
+                            </p>
+                          </div>
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-amber-200 dark:border-amber-700">
+                          <p className="text-[10px] text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+                            <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                            </svg>
+                            <span>الرمز الفريد يضمن أمان وموثوقية التسجيل</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
 
             {/* Footer */}
             <p className="mt-3 sm:mt-4 text-center text-xs text-gray-500 dark:text-gray-400">

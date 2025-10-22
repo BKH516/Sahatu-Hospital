@@ -80,7 +80,7 @@ export const TokenManager = {
       // Decrypt the token before returning
       return EncryptionUtils.decrypt(encrypted);
     } catch (error) {
-      console.error('Failed to decrypt token:', error);
+      // Failed to decrypt token
       // If decryption fails, remove the corrupted token
       TokenManager.removeToken();
       return null;
@@ -98,7 +98,7 @@ export const TokenManager = {
         sessionStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, encrypted);
       }
     } catch (error) {
-      console.error('Failed to encrypt token:', error);
+      // Failed to encrypt token
       throw new Error('Failed to store authentication token');
     }
   },

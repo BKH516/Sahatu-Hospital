@@ -21,7 +21,7 @@ export const EncryptionUtils = {
     try {
       return CryptoJS.AES.encrypt(text, ENCRYPTION_KEY).toString();
     } catch (error) {
-      console.error('Encryption error:', error);
+      // Encryption error
       throw new Error('Failed to encrypt data');
     }
   },
@@ -42,7 +42,7 @@ export const EncryptionUtils = {
       
       return decrypted;
     } catch (error) {
-      console.error('Decryption error:', error);
+      // Decryption error
       throw new Error('Failed to decrypt data');
     }
   }

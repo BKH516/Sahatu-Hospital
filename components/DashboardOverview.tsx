@@ -21,7 +21,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ onNavigate, userF
         const data = await getDashboardStats();
         setStats(data);
       } catch (error) {
-        console.error('Error loading dashboard stats:', error);
+        // Error loading dashboard stats
       } finally {
         setLoading(false);
       }
