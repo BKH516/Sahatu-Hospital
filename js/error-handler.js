@@ -2,25 +2,37 @@
 (function() {
     'use strict';
     
-    // Handle CSS loading errors
+    // Schedule helper to avoid layout thrash on the main thread
+    function schedule(fn) {
+        if (typeof window.requestIdleCallback === 'function') {
+            return window.requestIdleCallback(fn, { timeout: 500 });
+        }
+        return window.requestAnimationFrame(function() {
+            setTimeout(fn, 0);
+        });
+    }
+
+    // Handle CSS loading errors (scheduled)
     function handleCSSError() {
-        console.warn('CSS loading failed, applying fallback styles');
-        const fallbackCSS = document.createElement('link');
-        fallbackCSS.rel = 'stylesheet';
-        fallbackCSS.href = '/css/fallback.css';
-        document.head.appendChild(fallbackCSS);
+        schedule(function() {
+            const fallbackCSS = document.createElement('link');
+            fallbackCSS.rel = 'stylesheet';
+            fallbackCSS.href = '/css/fallback.css';
+            document.head.appendChild(fallbackCSS);
+        });
     }
     
-    // Handle Google Fonts loading errors
+    // Handle Google Fonts loading errors (scheduled)
     function handleFontError() {
-        console.warn('Google Fonts loading failed, using system fonts');
-        const style = document.createElement('style');
-        style.textContent = `
-            body, * {
-                font-family: 'Segoe UI', 'Tahoma', 'Arial', system-ui, sans-serif !important;
-            }
-        `;
-        document.head.appendChild(style);
+        schedule(function() {
+            const style = document.createElement('style');
+            style.textContent = `
+                body, * {
+                    font-family: 'Segoe UI', 'Tahoma', 'Arial', system-ui, sans-serif !important;
+                }
+            `;
+            document.head.appendChild(style);
+        });
     }
     
     // Monitor for resource loading errors
@@ -34,18 +46,18 @@
         }
     }, true);
     
-    // Check if fonts are loaded after a timeout
+    // Check if fonts are loaded after a timeout (scheduled to idle)
     setTimeout(function() {
-        if (!document.fonts || !document.fonts.check('1em Cairo')) {
-            console.warn('Cairo font not loaded, applying fallback');
-            handleFontError();
-        }
+        schedule(function() {
+            if (!document.fonts || !document.fonts.check('1em Cairo')) {
+                handleFontError();
+            }
+        });
     }, 3000);
     
     // Handle network errors
     window.addEventListener('unhandledrejection', function(e) {
         if (e.reason && e.reason.message && e.reason.message.includes('ERR_CONNECTION_TIMED_OUT')) {
-            console.warn('Network timeout detected, applying fallback resources');
             handleFontError();
             handleCSSError();
         }
