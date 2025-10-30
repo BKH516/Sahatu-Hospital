@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useId } from 'react';
 import { cn } from '../../utils/cn';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -7,16 +7,46 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   helperText?: string;
 }
 
-const Input = React.memo(forwardRef<HTMLInputElement, InputProps>(({
+const Input = React.memo(forwardRef<HTMLInputElement, InputProps>(({ 
   className,
   type,
   label,
   error,
   helperText,
   id,
+  name,
+  autoComplete,
   ...props
 }, ref) => {
-  const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+  const generatedId = useId();
+  const inputId = id || generatedId;
+
+  // Provide sensible default autocomplete when not explicitly provided
+  const inferredAutoComplete = (() => {
+    if (autoComplete) return autoComplete;
+    const key = (name || '').toString().toLowerCase();
+    switch (key) {
+      case 'email':
+        return 'email';
+      case 'password':
+        return type === 'password' ? 'current-password' : undefined;
+      case 'password_confirmation':
+      case 'new_password':
+        return 'new-password';
+      case 'phone':
+      case 'phone_number':
+        return 'tel';
+      case 'address':
+        return 'street-address';
+      case 'hospital_name':
+      case 'organization':
+        return 'organization';
+      case 'username':
+        return 'username';
+      default:
+        return undefined;
+    }
+  })();
 
   return (
     <div className="w-full">
@@ -37,6 +67,8 @@ const Input = React.memo(forwardRef<HTMLInputElement, InputProps>(({
         )}
         ref={ref}
         id={inputId}
+        name={name}
+        autoComplete={inferredAutoComplete}
         {...props}
       />
       {error && (

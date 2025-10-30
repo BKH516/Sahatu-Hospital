@@ -1131,3 +1131,10 @@ textarea:focus {
     display: none !important;
   }
 }
+
+/* Performance: create a separate composited layer for heavy visual effects */
+.gpu-accel {
+  will-change: transform;
+  transform: translateZ(0);
+  contain: layout paint;
+}

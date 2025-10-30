@@ -35,13 +35,18 @@ export const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({ pa
   const label = PasswordSecurity.getStrengthLabel(score);
   
   return (
-    <div className="mt-1 space-y-1">
+  <div className="mt-1 space-y-1">
       {/* Strength bar */}
       <div className="flex items-center gap-2">
         <div className="flex-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
           <div
-            className={`h-full transition-all duration-300 ${getColor()}`}
-            style={{ width: `${percentage}%` }}
+            className={`h-full ${getColor()}`}
+            style={{
+              transform: `scaleX(${percentage / 100})`,
+              transformOrigin: 'left',
+              transition: 'transform 300ms ease',
+              willChange: 'transform'
+            }}
           />
         </div>
         <span className={`text-[10px] sm:text-xs font-medium ${getTextColor()} whitespace-nowrap`}>

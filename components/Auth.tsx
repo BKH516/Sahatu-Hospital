@@ -13,9 +13,10 @@ import { showToast } from '../utils';
 
 interface AuthProps {
   onAuthSuccess: (token: string, remember?: boolean) => void;
+  onBack?: () => void;
 }
 
-const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
+const Auth: React.FC<AuthProps> = ({ onAuthSuccess, onBack }) => {
   const [isRegister, setIsRegister] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -117,12 +118,25 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 dark:bg-gray-950 overflow-x-hidden py-4 sm:py-6 lg:py-8">
       {/* Background decoration */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-teal-100/50 to-transparent dark:from-teal-900/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-gradient-to-tr from-cyan-100/50 to-transparent dark:from-cyan-900/20 rounded-full blur-3xl"></div>
+        <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-teal-100/50 to-transparent dark:from-teal-900/20 rounded-full blur-3xl gpu-accel"></div>
+        <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-gradient-to-tr from-cyan-100/50 to-transparent dark:from-cyan-900/20 rounded-full blur-3xl gpu-accel"></div>
       </div>
 
+      {/* Back Button */}
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="fixed top-4 left-4 z-20 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 dark:border-gray-700"
+          title="العودة للصفحة الرئيسية"
+        >
+          <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </button>
+      )}
+
       <div className="relative z-10 w-full max-w-md lg:max-w-5xl xl:max-w-6xl px-4 sm:px-6 lg:px-8 mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 xl:gap-10 items-center w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 xl:gap-10 items-center justify-center w-full">
           
           {/* ========== LEFT SIDE - BRANDING (Desktop Only) ========== */}
           <div className="hidden lg:flex flex-col justify-center space-y-6 xl:space-y-8">
@@ -249,7 +263,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
           </div>
 
           {/* ========== RIGHT SIDE - FORM ========== */}
-          <div className="w-full lg:max-w-md mx-auto">
+          <div className="w-full lg:max-w-md mx-auto flex flex-col items-center">
             {/* Mobile Logo */}
             <div className="lg:hidden flex justify-center mb-3 sm:mb-4">
               <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500 rounded-2xl shadow-xl flex items-center justify-center">
@@ -326,7 +340,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
             )}
 
             {/* Form Card */}
-            <Card className="border border-gray-200 dark:border-gray-700 shadow-xl bg-white dark:bg-gray-800">
+            <Card className="border border-gray-200 dark:border-gray-700 shadow-xl bg-white dark:bg-gray-800 w-full">
               <CardContent className="p-4 sm:p-5 lg:p-6">
                 {isRegister ? (
                   /* ========== REGISTER FORM ========== */
@@ -338,6 +352,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                         type="text"
                         required
                         placeholder="مستشفى الأمل"
+                        autoComplete="organization"
                         minLength={3}
                         maxLength={100}
                         title="يرجى إدخال اسم المستشفى (3-100 حرف)"
@@ -349,6 +364,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                           type="text"
                           required
                           placeholder="HOSP-001"
+                          autoComplete="off"
                           pattern="[A-Z0-9\-]+"
                           title="أدخل الرمز الذي استلمته من الإدارة"
                           minLength={4}
@@ -401,6 +417,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                       type="text"
                       required
                       placeholder="شارع الملك فهد، الرياض"
+                      autoComplete="street-address"
                       minLength={10}
                       maxLength={200}
                       title="يرجى إدخال عنوان كامل (10-200 حرف)"
@@ -572,8 +589,8 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
 
             {/* قسم كيفية التسجيل - يظهر فقط في صفحة إنشاء الحساب على الشاشات الصغيرة */}
             {isRegister && (
-              <div className="lg:hidden mt-4 sm:mt-6">
-                <Card className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-2 border-amber-200 dark:border-amber-700 shadow-lg">
+              <div className="lg:hidden mt-4 sm:mt-6 w-full">
+                <Card className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-2 border-amber-200 dark:border-amber-700 shadow-lg w-full">
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
                       <div className="w-10 h-10 bg-amber-100 dark:bg-amber-800/50 rounded-xl flex items-center justify-center flex-shrink-0">

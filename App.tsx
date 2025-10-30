@@ -1,10 +1,12 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 import { useApp } from './context/AppContext';
 import { Toaster } from 'react-hot-toast';
 import { toasterConfig } from './utils';
 
 // Lazy load components
-const Auth = lazy(() => import('./components/Auth'));
+const LandingPage = lazy(() => import('./components/LandingPage'));
+const LoginPage = lazy(() => import('./components/LoginPage'));
+const RegisterPage = lazy(() => import('./components/RegisterPage'));
 const Dashboard = lazy(() => import('./components/Dashboard'));
 
 // Loading component
@@ -17,8 +19,11 @@ const LoadingFallback: React.FC = () => (
   </div>
 );
 
+type AppView = 'landing' | 'login' | 'register';
+
 const App: React.FC = () => {
   const { isAuthenticated, login, logout } = useApp();
+  const [currentView, setCurrentView] = useState<AppView>('landing');
 
   const handleAuthSuccess = (newToken: string, remember: boolean = false) => {
     login(newToken, remember);
@@ -26,6 +31,19 @@ const App: React.FC = () => {
 
   const handleLogout = () => {
     logout();
+    setCurrentView('landing');
+  };
+
+  const handleNavigateToLogin = () => {
+    setCurrentView('login');
+  };
+
+  const handleNavigateToRegister = () => {
+    setCurrentView('register');
+  };
+
+  const handleBackToLanding = () => {
+    setCurrentView('landing');
   };
 
   return (
@@ -34,8 +52,23 @@ const App: React.FC = () => {
       <Suspense fallback={<LoadingFallback />}>
         {isAuthenticated ? (
           <Dashboard onLogout={handleLogout} />
+        ) : currentView === 'login' ? (
+          <LoginPage 
+            onAuthSuccess={handleAuthSuccess} 
+            onBack={handleBackToLanding}
+            onNavigateToRegister={handleNavigateToRegister}
+          />
+        ) : currentView === 'register' ? (
+          <RegisterPage 
+            onAuthSuccess={handleAuthSuccess} 
+            onBack={handleBackToLanding}
+            onNavigateToLogin={handleNavigateToLogin}
+          />
         ) : (
-          <Auth onAuthSuccess={handleAuthSuccess} />
+          <LandingPage 
+            onNavigateToLogin={handleNavigateToLogin}
+            onNavigateToRegister={handleNavigateToRegister}
+          />
         )}
       </Suspense>
     </>

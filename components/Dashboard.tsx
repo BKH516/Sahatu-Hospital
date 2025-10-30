@@ -803,7 +803,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       />
 
       {/* Main Layout - No Sidebar */}
-      <div className="flex-1 flex flex-col pt-16">
+      <div className="flex-1 flex flex-col pt-14 sm:pt-16">
         {/* Main Content */}
         <main className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-900">
           {/* Header Section - يظهر فقط في الأقسام المحددة */}

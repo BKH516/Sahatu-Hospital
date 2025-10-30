@@ -29,26 +29,26 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout, onMenuClick, userFullName, ac
   };
 
   return (
-    <header className="w-full h-16 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50 shadow-sm z-30 fixed top-0 right-0 left-0 transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
-        <div className="flex items-center justify-between h-full">
+    <header className="w-full h-14 sm:h-16 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50 shadow-sm z-30 fixed top-0 right-0 left-0 transition-colors duration-200 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 h-full w-full">
+        <div className="relative flex items-center justify-between h-full w-full min-w-0">
           {/* Left Section - Mobile Menu & Logo & User */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 relative z-10 flex-shrink-0 min-w-0">
             {/* Mobile menu button */}
             <button
-              className="lg:hidden flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg p-2 transition-all duration-200"
+              className="lg:hidden flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg p-1.5 sm:p-2 transition-all duration-200 flex-shrink-0"
               onClick={onMenuClick}
               aria-label="فتح القائمة الجانبية"
             >
-              <Menu size={24} />
+              <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
 
-            {/* Logo */}
-            <div>
+            {/* Logo (desktop) */}
+            <div className="flex-shrink-0 hidden lg:block">
               <img 
                 src={`${import.meta.env.BASE_URL}assets/sihatelogo.png`}
                 alt="صحتي لوجو" 
-                className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto object-contain"
+                className="h-8 sm:h-10 md:h-12 w-auto object-contain"
               />
             </div>
             
@@ -61,6 +61,15 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout, onMenuClick, userFullName, ac
                 <span className="text-sm font-medium">{userFullName}</span>
               </div>
             )}
+          </div>
+
+          {/* Centered Logo (mobile) */}
+          <div className="lg:hidden absolute left-1/2 transform -translate-x-1/2 flex items-center justify-center pointer-events-none z-0 max-w-[calc(100%-140px)]">
+            <img 
+              src={`${import.meta.env.BASE_URL}assets/sihatelogo.png`}
+              alt="صحتي لوجو"
+              className="h-7 sm:h-8 w-auto object-contain max-w-[120px] sm:max-w-[140px]"
+            />
           </div>
 
           {/* Center Section - Navigation Items */}
@@ -82,22 +91,25 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout, onMenuClick, userFullName, ac
           </div>
 
           {/* Right Section - User Info & Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 relative z-10 flex-shrink-0 min-w-0">
             {/* Actions */}
             <div className="flex items-center gap-2">
-              {/* Theme Toggle */}
-              <ThemeToggle />
+              {/* Theme Toggle - hidden on very small screens to save space */}
+              <div className="hidden sm:block">
+                <ThemeToggle />
+              </div>
               
               {/* Logout button */}
               <button
                 onClick={onLogout}
-                className="flex items-center gap-2 px-3 py-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 font-medium"
+                className="flex items-center gap-2 px-2 sm:px-3 py-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 font-medium flex-shrink-0"
+                aria-label="تسجيل الخروج"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 flex-shrink-0">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M18 15l3-3m0 0l-3-3m3 3H9" />
                 </svg>
-                <span className="hidden sm:inline">خروج</span>
+                <span className="hidden sm:inline text-sm">خروج</span>
               </button>
             </div>
 
