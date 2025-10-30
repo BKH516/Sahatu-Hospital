@@ -43,14 +43,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout, onMenuClick, userFullName, ac
               <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
 
-            {/* Logo (desktop) */}
-            <div className="flex-shrink-0 hidden lg:block">
-              <img 
-                src={`${import.meta.env.BASE_URL}assets/sihatelogo.png`}
-                alt="صحتي لوجو" 
-                className="h-8 sm:h-10 md:h-12 w-auto object-contain"
-              />
-            </div>
+            {/* Logo removed as requested */}
             
             {/* User Info */}
             {userFullName && (
@@ -63,14 +56,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout, onMenuClick, userFullName, ac
             )}
           </div>
 
-          {/* Centered Logo (mobile) */}
-          <div className="lg:hidden absolute left-1/2 transform -translate-x-1/2 flex items-center justify-center pointer-events-none z-0 max-w-[calc(100%-140px)]">
-            <img 
-              src={`${import.meta.env.BASE_URL}assets/sihatelogo.png`}
-              alt="صحتي لوجو"
-              className="h-7 sm:h-8 w-auto object-contain max-w-[120px] sm:max-w-[140px]"
-            />
-          </div>
+          {/* Mobile logo removed as requested */}
 
           {/* Center Section - Navigation Items */}
           <div className="hidden lg:flex items-center gap-1">
