@@ -94,10 +94,8 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout, onMenuClick, userFullName, ac
           <div className="flex items-center gap-2 sm:gap-3 relative z-10 flex-shrink-0 min-w-0">
             {/* Actions */}
             <div className="flex items-center gap-2">
-              {/* Theme Toggle - hidden on very small screens to save space */}
-              <div className="hidden sm:block">
-                <ThemeToggle />
-              </div>
+              {/* Theme Toggle */}
+              <ThemeToggle />
               
               {/* Logout button */}
               <button
