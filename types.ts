@@ -40,11 +40,6 @@ export interface Account {
   hospital: Hospital;
 }
 
-export interface HospitalProfile {
-  account: Account,
-  hospital: Hospital
-}
-
 export interface HospitalService {
   id: number;
   hospital_id: number;
@@ -57,35 +52,4 @@ export interface HospitalService {
 export interface WorkSchedule {
   id: number;
   day_of_week: string;
-}
-
-export interface HospitalReservation {
-  id: number;
-  user_id: number;
-  hospital_service_id: number;
-  hospital_id: number;
-  start_date: string;
-  end_date: string;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  created_at: string;
-  updated_at: string;
-  user: {
-    id: number;
-    account_id: number;
-    full_name: string;
-    age: number;
-    gender: string;
-    account: {
-      id: number;
-      full_name: string;
-      email: string;
-      phone_number: string;
-    };
-  };
-  hospital_service: {
-    id: number;
-    service_name: string;
-    price: string;
-    capacity: number;
-  };
 }
