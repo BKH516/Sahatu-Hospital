@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Menu } from 'lucide-react';
 import ThemeToggle from './ui/ThemeToggle';
+import LanguageToggle from './ui/LanguageToggle';
 
 interface NavbarProps {
   onLogout: () => void;
@@ -11,15 +13,16 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onLogout, onMenuClick, userFullName, activeTab, onTabChange }) => {
+  const { t } = useTranslation();
 
   // Navigation items
   const navItems = [
-    { key: 'overview', label: 'الرئيسية', icon: '🏠' },
-    { key: 'services', label: 'الخدمات', icon: '🏥' },
-    { key: 'schedule', label: 'الجدول', icon: '📅' },
-    { key: 'reservations', label: 'الحجوزات', icon: '⏳' },
-    { key: 'history', label: 'السجل', icon: '📜' },
-    { key: 'profile', label: 'الملف الشخصي', icon: '👤' }
+    { key: 'overview', label: t('dashboard.navigation.overview'), icon: '🏠' },
+    { key: 'services', label: t('dashboard.navigation.services'), icon: '🏥' },
+    { key: 'schedule', label: t('dashboard.navigation.schedule'), icon: '📅' },
+    { key: 'reservations', label: t('dashboard.navigation.reservations'), icon: '⏳' },
+    { key: 'history', label: t('dashboard.navigation.history'), icon: '📜' },
+    { key: 'profile', label: t('dashboard.navigation.profile'), icon: '👤' }
   ];
 
   const handleTabClick = (tabKey: string) => {
@@ -38,7 +41,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout, onMenuClick, userFullName, ac
             <button
               className="lg:hidden flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg p-1.5 sm:p-2 transition-all duration-200 flex-shrink-0"
               onClick={onMenuClick}
-              aria-label="فتح القائمة الجانبية"
+              aria-label={t('dashboard.navigation.openMenu')}
             >
               <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
@@ -80,6 +83,8 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout, onMenuClick, userFullName, ac
           <div className="flex items-center gap-2 sm:gap-3 relative z-10 flex-shrink-0 min-w-0">
             {/* Actions */}
             <div className="flex items-center gap-2">
+              {/* Language Toggle */}
+              <LanguageToggle />
               {/* Theme Toggle */}
               <ThemeToggle />
               
@@ -87,13 +92,13 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout, onMenuClick, userFullName, ac
               <button
                 onClick={onLogout}
                 className="flex items-center gap-2 px-2 sm:px-3 py-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 font-medium flex-shrink-0"
-                aria-label="تسجيل الخروج"
+                aria-label={t('dashboard.navigation.logout')}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 flex-shrink-0">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M18 15l3-3m0 0l-3-3m3 3H9" />
                 </svg>
-                <span className="hidden sm:inline text-sm">خروج</span>
+                <span className="hidden sm:inline text-sm">{t('dashboard.navigation.logoutButton')}</span>
               </button>
             </div>
 

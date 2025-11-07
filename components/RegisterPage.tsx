@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { registerHospital } from '../services/apiService';
 import { HospitalIcon } from './ui/icons';
 import { Card, CardContent } from './ui/card';
@@ -8,6 +9,8 @@ import { SanitizationUtils } from '../utils/sanitization';
 import { PasswordSecurity } from '../utils/passwordSecurity';
 import { PasswordStrengthMeter } from './PasswordStrengthMeter';
 import { showToast } from '../utils';
+import LanguageToggle from './ui/LanguageToggle';
+import ThemeToggle from './ui/ThemeToggle';
 
 interface RegisterPageProps {
   onAuthSuccess: (token: string, remember?: boolean) => void;
@@ -16,6 +19,7 @@ interface RegisterPageProps {
 }
 
 const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNavigateToLogin }) => {
+  const { t, i18n } = useTranslation();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -47,21 +51,21 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
     }
     
     if (pwd !== passwordConfirmation) {
-      setError('كلمة المرور وتأكيد كلمة المرور غير متطابقتين');
+      setError(t('auth.register.passwordMismatch'));
       setLoading(false);
       return;
     }
 
     try {
       await registerHospital(formData);
-      showToast.success('تم التسجيل بنجاح! يمكنك الآن تسجيل الدخول.', 3000);
+      showToast.success(t('auth.register.success'), 3000);
       setTimeout(() => {
         onNavigateToLogin();
         setSuccess(null);
         setPassword('');
       }, 3000);
     } catch (err: any) {
-      const errorMessage = SanitizationUtils.sanitizeText(err.message || 'حدث خطأ أثناء التسجيل');
+      const errorMessage = SanitizationUtils.sanitizeText(err.message || t('auth.register.error'));
       showToast.error(errorMessage);
       setError(errorMessage);
     } finally {
@@ -77,16 +81,20 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
         <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-gradient-to-tr from-cyan-100/50 to-transparent dark:from-cyan-900/20 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Back Button */}
-      <button
-        onClick={onBack}
-        className="fixed top-4 left-4 z-20 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 dark:border-gray-700"
-        title="العودة للصفحة الرئيسية"
-      >
-        <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-      </button>
+      {/* Top Controls */}
+      <div className="fixed top-4 left-4 z-20 flex items-center gap-2">
+        <button
+          onClick={onBack}
+          className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 dark:border-gray-700"
+          title={t('common.back')}
+        >
+          <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </button>
+        <LanguageToggle />
+        <ThemeToggle />
+      </div>
 
       <div className="relative z-10 w-full max-w-md lg:max-w-5xl xl:max-w-6xl px-4 sm:px-6 lg:px-8 mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 xl:gap-10 items-center justify-center w-full">
@@ -101,16 +109,16 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
                 </div>
                 <div>
                   <h1 className="text-3xl xl:text-4xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                    صحتي
+                    {t('common.appName')}
                   </h1>
                   <p className="text-gray-600 dark:text-gray-400 text-base xl:text-lg font-medium">
-                    منصة طبية متكاملة
+                    {t('common.appTagline')}
                   </p>
                 </div>
               </div>
               
               <p className="text-lg xl:text-xl text-gray-700 dark:text-gray-300 font-semibold leading-relaxed">
-                انضم إلى مئات المستشفيات التي تثق بنا
+                {t('auth.register.subtitle')}
               </p>
             </div>
 
@@ -124,25 +132,25 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
                 </div>
                 <div className="flex-1">
                   <h3 className="text-sm xl:text-base font-bold text-amber-900 dark:text-amber-100 mb-2">
-                    📋 كيفية التسجيل في المنصة
+                    📋 {t('auth.register.howToRegister')}
                   </h3>
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">
                       <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">1</span>
                       <p className="text-xs xl:text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
-                        تواصل مع الإدارة وأطلب إنشاء حساب لمستشفاك
+                        {t('auth.register.step1')}
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">2</span>
                       <p className="text-xs xl:text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
-                        ستستلم <span className="font-bold text-amber-900 dark:text-amber-100">رمزاً فريداً</span> خاصاً بمستشفاك
+                        {t('auth.register.step2')}
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">3</span>
                       <p className="text-xs xl:text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
-                        استخدم الرمز الفريد عند إنشاء الحساب
+                        {t('auth.register.step3')}
                       </p>
                     </div>
                   </div>
@@ -151,7 +159,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
                       <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                       </svg>
-                      <span>الرمز الفريد يضمن أمان وموثوقية التسجيل</span>
+                      <span>{t('auth.register.uniqueCodeNote')}</span>
                     </p>
                   </div>
                 </div>
@@ -171,10 +179,10 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
             {/* Title */}
             <div className="text-center mb-3 sm:mb-4">
               <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                إنشاء حساب جديد
+                {t('auth.register.title')}
               </h2>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                املأ البيانات للانضمام إلى المنصة
+                {t('auth.register.subtitleForm')}
               </p>
             </div>
 
@@ -211,32 +219,32 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
                 <form onSubmit={handleRegister} className="space-y-3">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Input
-                      label="اسم المستشفى"
+                      label={t('auth.register.hospitalName')}
                       name="hospital_name"
                       type="text"
                       required
-                      placeholder="مستشفى الأمل"
+                      placeholder={t('auth.register.hospitalNamePlaceholder')}
                       minLength={3}
                       maxLength={100}
-                      title="يرجى إدخال اسم المستشفى (3-100 حرف)"
+                      title={t('auth.register.hospitalNameTitle')}
                     />
                     <div>
                       <Input
-                        label="الرمز الفريد"
+                        label={t('auth.register.uniqueCode')}
                         name="unique_code"
                         type="text"
                         required
                         placeholder="HOSP-001"
                         pattern="[A-Z0-9\-]+"
-                        title="أدخل الرمز الذي استلمته من الإدارة"
                         minLength={4}
                         maxLength={20}
+                        title={t('auth.register.uniqueCodeTitle')}
                       />
                       <p className="mt-1 text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
-                        الرمز المُرسل من الإدارة
+                        {t('auth.register.uniqueCodeHelper')}
                       </p>
                     </div>
                   </div>
@@ -244,63 +252,63 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <Input
-                        label="البريد الإلكتروني"
+                        label={t('auth.register.email')}
                         name="email"
                         type="email"
                         required
                         placeholder="info@hospital.com"
                         autoComplete="email"
-                        title="يرجى إدخال بريد إلكتروني صحيح"
+                        title={t('auth.register.emailTitle')}
                       />
                       <p className="mt-1 text-[10px] text-gray-500 dark:text-gray-400">
-                        مثال: info@hospital.com
+                        {t('auth.register.emailExample')}
                       </p>
                     </div>
                     <div>
                       <Input
-                        label="رقم الهاتف"
+                        label={t('auth.register.phone')}
                         name="phone_number"
                         type="tel"
                         required
                         placeholder="+966 50 123 4567"
                         autoComplete="tel"
                         pattern="[+]?[0-9\s\-]+"
-                        title="يرجى إدخال رقم هاتف صحيح (أرقام فقط)"
+                        title={t('auth.register.phonePatternTitle')}
                       />
                       <p className="mt-1 text-[10px] text-gray-500 dark:text-gray-400">
-                        مثال: +966501234567
+                        {t('auth.register.phoneExample')}
                       </p>
                     </div>
                   </div>
 
                   <Input
-                    label="العنوان"
+                    label={t('auth.register.address')}
                     name="address"
                     type="text"
                     required
-                    placeholder="شارع الملك فهد، الرياض"
+                    placeholder={t('auth.register.addressPlaceholder')}
                     minLength={10}
                     maxLength={200}
-                    title="يرجى إدخال عنوان كامل (10-200 حرف)"
+                    title={t('auth.register.addressTitle')}
                   />
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="relative">
                       <Input
-                        label="كلمة المرور"
+                        label={t('auth.register.password')}
                         name="password"
                         type={showPassword ? "text" : "password"}
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="pr-12"
+                        className={`pr-12 ${i18n.language === 'ar' ? 'pl-12' : ''}`}
                         autoComplete="new-password"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute left-3 top-[38px] text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+                        className={`absolute ${i18n.language === 'ar' ? 'right-3' : 'left-3'} top-[38px] text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors`}
                       >
                         {showPassword ? (
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -318,18 +326,18 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
 
                     <div className="relative">
                       <Input
-                        label="تأكيد كلمة المرور"
+                        label={t('auth.register.confirmPassword')}
                         name="password_confirmation"
                         type={showConfirmPassword ? "text" : "password"}
                         required
                         placeholder="••••••••"
-                        className="pr-12"
+                        className={`pr-12 ${i18n.language === 'ar' ? 'pl-12' : ''}`}
                         autoComplete="new-password"
                       />
                       <button
                         type="button"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute left-3 top-[38px] text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+                        className={`absolute ${i18n.language === 'ar' ? 'right-3' : 'left-3'} top-[38px] text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors`}
                       >
                         {showConfirmPassword ? (
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -357,10 +365,10 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        جاري الإنشاء...
+                        {t('auth.register.creating')}
                       </span>
                     ) : (
-                      'إنشاء الحساب'
+                      t('auth.register.registerButton')
                     )}
                   </Button>
                 </form>
@@ -368,19 +376,19 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
                 {/* Login Link */}
                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 text-center">
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    لديك حساب بالفعل؟
+                    {t('auth.register.hasAccount')}
                   </p>
                   <button
                     onClick={onNavigateToLogin}
                     className="text-sm font-semibold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors hover:underline"
                   >
-                    تسجيل الدخول
+                    {t('auth.register.loginLink')}
                   </button>
                 </div>
               </CardContent>
             </Card>
 
-            {/* قسم كيفية التسجيل - يظهر فقط على الشاشات الصغيرة */}
+            {/* Registration Instructions - Mobile Only */}
             <div className="lg:hidden mt-4 sm:mt-6 w-full">
               <Card className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-2 border-amber-200 dark:border-amber-700 shadow-lg w-full">
                 <CardContent className="p-4">
@@ -392,25 +400,25 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
                     </div>
                     <div className="flex-1">
                       <h3 className="text-sm font-bold text-amber-900 dark:text-amber-100 mb-3">
-                        📋 كيفية التسجيل في المنصة
+                        📋 {t('auth.register.howToRegister')}
                       </h3>
                       <div className="space-y-2">
                         <div className="flex items-start gap-2">
                           <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">1</span>
                           <p className="text-xs text-amber-800 dark:text-amber-200 leading-relaxed">
-                            تواصل مع الإدارة وأطلب إنشاء حساب لمستشفاك
+                            {t('auth.register.step1')}
                           </p>
                         </div>
                         <div className="flex items-start gap-2">
                           <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">2</span>
                           <p className="text-xs text-amber-800 dark:text-amber-200 leading-relaxed">
-                            ستستلم <span className="font-bold text-amber-900 dark:text-amber-100">رمزاً فريداً</span> خاصاً بمستشفاك
+                            {t('auth.register.step2')}
                           </p>
                         </div>
                         <div className="flex items-start gap-2">
                           <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full flex-shrink-0 mt-0.5">3</span>
                           <p className="text-xs text-amber-800 dark:text-amber-200 leading-relaxed">
-                            استخدم الرمز الفريد عند إنشاء الحساب
+                            {t('auth.register.step3')}
                           </p>
                         </div>
                       </div>
@@ -419,7 +427,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
                           <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                           </svg>
-                          <span>الرمز الفريد يضمن أمان وموثوقية التسجيل</span>
+                          <span>{t('auth.register.uniqueCodeNote')}</span>
                         </p>
                       </div>
                     </div>
@@ -430,7 +438,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
 
             {/* Footer */}
             <p className="mt-3 sm:mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
-              محمي بتشفير SSL 🔒
+              {t('common.sslProtected')}
             </p>
           </div>
         </div>

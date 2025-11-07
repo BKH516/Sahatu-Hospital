@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { loginWithPassword } from '../services/apiService';
 import { HospitalIcon } from './ui/icons';
 import { Card, CardContent } from './ui/card';
@@ -7,14 +8,18 @@ import { Input } from './ui/Input';
 import { SanitizationUtils } from '../utils/sanitization';
 import { CSRFProtection } from '../utils/csrfProtection';
 import { showToast } from '../utils';
+import LanguageToggle from './ui/LanguageToggle';
+import ThemeToggle from './ui/ThemeToggle';
 
 interface LoginPageProps {
   onAuthSuccess: (token: string, remember?: boolean) => void;
   onBack: () => void;
   onNavigateToRegister: () => void;
+  onNavigateToForgotPassword: () => void;
 }
 
-const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigateToRegister }) => {
+const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigateToRegister, onNavigateToForgotPassword }) => {
+  const { t, i18n } = useTranslation();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -31,7 +36,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
     
     try {
       const data = await loginWithPassword(formData);
-      showToast.success('تم تسجيل الدخول بنجاح!', 2000);
+      showToast.success(t('auth.login.success'), 2000);
       
       CSRFProtection.generateToken();
       
@@ -39,7 +44,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
         onAuthSuccess(data.token, rememberMe);
       }, 1000);
     } catch (err: any) {
-      const errorMessage = SanitizationUtils.sanitizeText(err.message || 'حدث خطأ أثناء تسجيل الدخول');
+      const errorMessage = SanitizationUtils.sanitizeText(err.message || t('auth.login.error'));
       showToast.error(errorMessage);
       setError(errorMessage);
     } finally {
@@ -55,16 +60,20 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
         <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-gradient-to-tr from-cyan-100/50 to-transparent dark:from-cyan-900/20 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Back Button */}
-      <button
-        onClick={onBack}
-        className="fixed top-4 left-4 z-20 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 dark:border-gray-700"
-        title="العودة للصفحة الرئيسية"
-      >
-        <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-      </button>
+      {/* Top Controls */}
+      <div className="fixed top-4 left-4 z-20 flex items-center gap-2">
+        <button
+          onClick={onBack}
+          className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 dark:border-gray-700"
+          title={t('common.back')}
+        >
+          <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </button>
+        <LanguageToggle />
+        <ThemeToggle />
+      </div>
 
       <div className="relative z-10 w-full max-w-md lg:max-w-5xl xl:max-w-6xl px-4 sm:px-6 lg:px-8 mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 xl:gap-10 items-center justify-center w-full">
@@ -79,16 +88,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
                 </div>
                 <div>
                   <h1 className="text-3xl xl:text-4xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                    صحتي
+                    {t('common.appName')}
                   </h1>
                   <p className="text-gray-600 dark:text-gray-400 text-base xl:text-lg font-medium">
-                    منصة طبية متكاملة
+                    {t('common.appTagline')}
                   </p>
                 </div>
               </div>
               
               <p className="text-lg xl:text-xl text-gray-700 dark:text-gray-300 font-semibold leading-relaxed">
-                مرحباً بعودتك إلى منصتك الطبية
+                {t('auth.login.subtitle')}
               </p>
             </div>
 
@@ -101,8 +110,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">أمان متقدم</h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">تشفير متقدم</p>
+                  <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">{t('login.advancedSecurity')}</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{t('login.advancedEncryption')}</p>
                 </div>
               </div>
               
@@ -113,8 +122,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">أداء فائق</h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">سرعة عالية</p>
+                  <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">{t('login.highPerformance')}</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{t('login.highSpeed')}</p>
                 </div>
               </div>
 
@@ -125,8 +134,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">سهل الاستخدام</h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">واجهة بديهية</p>
+                  <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">{t('login.easyToUse')}</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{t('login.intuitiveInterface')}</p>
                 </div>
               </div>
 
@@ -137,8 +146,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">موثوق به</h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">معتمد رسمياً</p>
+                  <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">{t('login.trusted')}</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{t('login.officiallyApproved')}</p>
                 </div>
               </div>
             </div>
@@ -156,10 +165,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
             {/* Title */}
             <div className="text-center mb-3 sm:mb-4">
               <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                تسجيل الدخول
+                {t('auth.login.title')}
               </h2>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                أدخل بياناتك للمتابعة
+                {t('auth.login.subtitle')}
               </p>
             </div>
 
@@ -182,7 +191,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
               <CardContent className="p-4 sm:p-5 lg:p-6">
                 <form onSubmit={handleLogin} className="space-y-4">
                   <Input
-                    label="البريد الإلكتروني"
+                    label={t('auth.login.email')}
                     name="email"
                     type="email"
                     autoComplete="email"
@@ -192,18 +201,18 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
 
                   <div className="relative">
                     <Input
-                      label="كلمة المرور"
+                      label={t('auth.login.password')}
                       name="password"
                       type={showPassword ? "text" : "password"}
                       required
                       placeholder="••••••••"
-                      className="pr-12"
+                      className={`pr-12 ${i18n.language === 'ar' ? 'pl-12' : ''}`}
                       autoComplete="current-password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute left-3 top-[38px] text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+                      className={`absolute ${i18n.language === 'ar' ? 'right-3' : 'left-3'} top-[38px] text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors`}
                     >
                       {showPassword ? (
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -218,8 +227,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between pt-1">
-                    <label className="flex items-center gap-2 cursor-pointer group">
+                  <div className={`flex items-center justify-between pt-1 ${i18n.language === 'ar' ? 'flex-row-reverse' : ''}`}>
+                    <label className={`flex items-center gap-2 cursor-pointer group ${i18n.language === 'ar' ? 'flex-row-reverse' : ''}`}>
                       <input
                         type="checkbox"
                         checked={rememberMe}
@@ -227,9 +236,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
                         className="w-4 h-4 text-teal-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-teal-500 focus:ring-2 cursor-pointer"
                       />
                       <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors select-none">
-                        تذكرني
+                        {t('auth.login.rememberMe')}
                       </span>
                     </label>
+                    <button
+                      type="button"
+                      onClick={onNavigateToForgotPassword}
+                      className="text-xs sm:text-sm font-semibold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors hover:underline"
+                    >
+                      {t('auth.login.forgotPassword')}
+                    </button>
                   </div>
 
                   <Button 
@@ -244,10 +260,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        جاري التحقق...
+                        {t('common.loading')}
                       </span>
                     ) : (
-                      'تسجيل الدخول'
+                      t('auth.login.loginButton')
                     )}
                   </Button>
                 </form>
@@ -255,13 +271,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
                 {/* Register Link */}
                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 text-center">
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    ليس لديك حساب؟
+                    {t('auth.login.noAccount')}
                   </p>
                   <button
                     onClick={onNavigateToRegister}
                     className="text-sm font-semibold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors hover:underline"
                   >
-                    إنشاء حساب جديد
+                    {t('auth.login.registerLink')}
                   </button>
                 </div>
               </CardContent>
@@ -269,7 +285,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onAuthSuccess, onBack, onNavigate
 
             {/* Footer */}
             <p className="mt-3 sm:mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
-              محمي بتشفير SSL 🔒
+              {t('common.sslProtected')}
             </p>
           </div>
         </div>

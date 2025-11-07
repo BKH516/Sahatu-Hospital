@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Hospital, HospitalService, WorkSchedule, Account } from '../types';
 import * as api from '../services/apiService';
-import { UserIcon, BriefcaseIcon, CalendarIcon, LogOutIcon, PlusCircleIcon, EditIcon, TrashIcon, HospitalIcon, ClockIcon } from './ui/icons';
+import { UserIcon, BriefcaseIcon, CalendarIcon, PlusCircleIcon, EditIcon, HospitalIcon, ClockIcon } from './ui/icons';
 import Navbar from './Navbar';
 import MobileSidebar from './MobileSidebar';
 import DashboardOverview from './DashboardOverview';
@@ -9,7 +10,7 @@ import ReservationsView from './ReservationsView';
 import ReservationsHistory from './ReservationsHistory';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
+import { Input } from './ui/Input';
 import { showToast } from '../utils';
 import ConfirmDialog from './ui/ConfirmDialog';
 import ActionButtons from './ui/ActionButtons';
@@ -22,6 +23,7 @@ interface DashboardProps {
 
 // Sub-components defined outside the main component to prevent re-renders
 const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null; refreshData: () => void }> = ({ hospital, account, refreshData }) => {
+    const { t, i18n } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -31,11 +33,11 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
         const formData = new FormData(e.currentTarget);
         try {
             await api.updateProfile(formData);
-            showToast.success("تم تحديث الملف الشخصي بنجاح");
+            showToast.success(t('dashboard.profile.updateSuccess'));
             setIsEditing(false);
             refreshData();
         } catch (error: any) {
-            showToast.error(`خطأ: ${error.message}`);
+            showToast.error(`${t('common.error')}: ${error.message}`);
         } finally {
             setLoading(false);
         }
@@ -45,21 +47,21 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
         <div className="flex items-center justify-center p-8">
             <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 dark:border-teal-400 mx-auto mb-4"></div>
-                <p className="text-gray-600 dark:text-gray-400">جاري تحميل بيانات الملف الشخصي...</p>
+                <p className="text-gray-600 dark:text-gray-400">{t('dashboard.profile.loading')}</p>
             </div>
         </div>
     );
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 w-full max-w-3xl mx-auto">
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <UserIcon className="w-5 h-5 text-teal-600" />
-                        الملف الشخصي للمستشفى
+                        {t('dashboard.profile.title')}
                     </CardTitle>
                     <CardDescription>
-                        عرض وتعديل معلومات المستشفى الأساسية
+                        {t('dashboard.profile.description')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -67,19 +69,19 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <Input
-                                    label="اسم المستشفى"
+                                    label={t('dashboard.profile.hospitalName')}
                                     name="full_name"
                                     defaultValue={hospital.full_name}
                                     required
                                 />
                                 <Input
-                                    label="العنوان"
+                                    label={t('dashboard.profile.address')}
                                     name="address"
                                     defaultValue={hospital.address}
                                     required
                                 />
                                 <Input
-                                    label="رقم الهاتف"
+                                    label={t('dashboard.profile.phone')}
                                     name="phone_number"
                                     defaultValue={account.phone_number}
                                     required
@@ -87,10 +89,10 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
                         </div>
                         <div className="flex gap-4">
                                 <Button type="submit" disabled={loading} section="hospital">
-                                {loading ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+                                {loading ? t('common.saving') : t('common.saveChanges')}
                                 </Button>
                                 <Button type="button" onClick={() => setIsEditing(false)} variant="outline">
-                                    إلغاء
+                                    {t('common.cancel')}
                                 </Button>
                         </div>
                     </form>
@@ -98,36 +100,36 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">اسم المستشفى</h4>
+                                    <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{t('dashboard.profile.hospitalName')}</h4>
                                     <p className="text-gray-600 dark:text-gray-300">{hospital.full_name}</p>
                                 </div>
                                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">العنوان</h4>
+                                    <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{t('dashboard.profile.address')}</h4>
                                     <p className="text-gray-600 dark:text-gray-300">{hospital.address}</p>
                                 </div>
                                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">البريد الإلكتروني</h4>
+                                    <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{t('dashboard.profile.email')}</h4>
                                     <p className="text-gray-600 dark:text-gray-300">{account.email}</p>
                                 </div>
                                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">رقم الهاتف</h4>
+                                    <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{t('dashboard.profile.phone')}</h4>
                                     <p className="text-gray-600 dark:text-gray-300">{account.phone_number}</p>
                                 </div>
                             </div>
                             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                 <div>
-                                    <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">الحالة</h4>
+                                    <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{t('dashboard.profile.status')}</h4>
                                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
                                         account.is_approved === 'approved' 
                                             ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' 
                                             : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
                                     }`}>
-                                        {account.is_approved === 'approved' ? 'مقبول' : 'قيد الانتظار'}
+                                        {account.is_approved === 'approved' ? t('dashboard.profile.approved') : t('dashboard.profile.pending')}
                                     </span>
                                 </div>
                                 <Button onClick={() => setIsEditing(true)} section="hospital">
-                                    <EditIcon className="w-4 h-4 mr-2" />
-                                    تعديل الملف الشخصي
+                                    <EditIcon className={`w-4 h-4 ${i18n.language === 'ar' ? 'mr-2' : 'ml-2'}`} />
+                                    {t('dashboard.profile.editProfile')}
                                 </Button>
                             </div>
                     </div>
@@ -139,6 +141,8 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
 };
 
 const ServicesView: React.FC = () => {
+    const { t, i18n } = useTranslation();
+    const isRTL = i18n.dir() === 'rtl';
     const [services, setServices] = useState<HospitalService[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -154,11 +158,11 @@ const ServicesView: React.FC = () => {
             const data = await api.getServices();
             setServices(data);
         } catch (error) {
-            showToast.error('فشل في جلب الخدمات');
+            showToast.error(t('dashboard.services.saveError'));
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [i18n.language, t]);
 
     useEffect(() => {
         fetchServices();
@@ -171,15 +175,15 @@ const ServicesView: React.FC = () => {
     const handleDeleteConfirm = async () => {
         if (!confirmDelete.serviceId) return;
         
-        const loadingToast = showToast.loading('جاري حذف الخدمة...');
+        const loadingToast = showToast.loading(t('dashboard.services.deleting'));
         try {
             await api.deleteService(confirmDelete.serviceId);
             showToast.dismiss(loadingToast);
-            showToast.success('تم حذف الخدمة بنجاح');
+            showToast.success(t('dashboard.services.deleteSuccess'));
             fetchServices();
         } catch (error) {
             showToast.dismiss(loadingToast);
-            showToast.error('فشل في حذف الخدمة');
+            showToast.error(t('dashboard.services.deleteError'));
         } finally {
             setConfirmDelete({ isOpen: false, serviceId: null });
         }
@@ -191,7 +195,7 @@ const ServicesView: React.FC = () => {
         const price = formData.get('price');
         const capacity = formData.get('capacity');
 
-        const loadingToast = showToast.loading(editingService ? 'جاري تحديث الخدمة...' : 'جاري إضافة الخدمة...');
+        const loadingToast = showToast.loading(editingService ? t('dashboard.services.updating') : t('dashboard.services.adding'));
         try {
             if (editingService) {
                 if(price && capacity) {
@@ -201,28 +205,28 @@ const ServicesView: React.FC = () => {
                 await api.addService(formData);
             }
             showToast.dismiss(loadingToast);
-            showToast.success(editingService ? 'تم تحديث الخدمة بنجاح' : 'تم إضافة الخدمة بنجاح');
+            showToast.success(editingService ? t('dashboard.services.updateSuccess') : t('dashboard.services.addSuccess'));
             fetchServices();
             setIsModalOpen(false);
             setEditingService(null);
         } catch (error: any) {
             showToast.dismiss(loadingToast);
-            showToast.error(`فشل في حفظ الخدمة: ${error.message}`);
+            showToast.error(`${t('dashboard.services.saveError')}: ${error.message}`);
         }
     };
 
     return (
-        <div className="space-y-6">
-            <Card>
+        <div className="space-y-6 w-full max-w-6xl mx-auto px-2 sm:px-0">
+            <Card className="w-full">
                 <CardHeader>
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <CardTitle className="flex items-center gap-2">
+                    <div className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between ${isRTL ? 'sm:flex-row-reverse text-right' : ''}`}>
+                        <div className="space-y-1">
+                            <CardTitle className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse justify-end' : ''}`}>
                                 <BriefcaseIcon className="w-5 h-5 text-blue-600" />
-                                إدارة الخدمات الطبية
+                                {t('dashboard.services.title')}
                             </CardTitle>
-                            <CardDescription>
-                                إضافة وتعديل الخدمات والأسعار والمواعيد
+                            <CardDescription className={isRTL ? 'text-right' : ''}>
+                                {t('dashboard.services.description')}
                             </CardDescription>
                         </div>
                         <Button 
@@ -230,9 +234,9 @@ const ServicesView: React.FC = () => {
                             section="services"
                             className="text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10"
                         >
-                            <PlusCircleIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                            <span className="hidden xs:inline">إضافة خدمة جديدة</span>
-                            <span className="xs:hidden">إضافة</span>
+                            <PlusCircleIcon className={`w-3 h-3 sm:w-4 sm:h-4 ${i18n.language === 'ar' ? 'mr-1 sm:mr-2' : 'ml-1 sm:ml-2'}`} />
+                            <span className="hidden xs:inline">{t('dashboard.services.addService')}</span>
+                            <span className="xs:hidden">{t('dashboard.services.add')}</span>
                         </Button>
                     </div>
                 </CardHeader>
@@ -241,32 +245,40 @@ const ServicesView: React.FC = () => {
                         <div className="flex items-center justify-center p-8">
                             <div className="text-center">
                                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
-                                <p className="text-gray-600 dark:text-gray-400">جاري التحميل...</p>
+                                <p className="text-gray-600 dark:text-gray-400">{t('common.loading')}</p>
                             </div>
                         </div>
                     ) : (
                         <>
                             {/* Mobile View - Cards */}
-                            <div className="block md:hidden space-y-3">
+                            <div className="block md:hidden space-y-4 w-full">
                                 {services.map(service => (
-                                    <Card key={service.id} className="border-r-4 border-r-blue-500">
-                                        <CardContent className="p-3 space-y-3">
-                                            <div className="flex items-start justify-between gap-2">
-                                                <div className="flex-1 min-w-0">
-                                                    <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm mb-1 truncate">
-                                                        {service.service_name}
-                                                    </h3>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
-                                                            💰 {service.price} ل.س
-                                                        </span>
-                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
-                                                            👥 {service.capacity} مريض
-                                                        </span>
-                                                    </div>
+                                    <Card
+                                        key={service.id}
+                                        className="w-full border border-blue-200 dark:border-blue-500/40 rounded-xl shadow-sm bg-white/80 dark:bg-gray-800/70 backdrop-blur"
+                                    >
+                                        <CardContent className="p-4 space-y-4 text-center">
+                                            <div className="flex justify-center">
+                                                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shadow-inner">
+                                                    <BriefcaseIcon className="w-6 h-6 text-blue-600 dark:text-blue-300" />
                                                 </div>
                                             </div>
-                                            <div className="flex gap-2 pt-2">
+                                            <div className="space-y-1">
+                                                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                                                    {service.service_name}
+                                                </h3>
+                                            </div>
+                                            <div className="flex flex-wrap justify-center gap-3">
+                                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-200 shadow-sm">
+                                                    <span>💰</span>
+                                                    {service.price} {t('dashboard.services.currency')}
+                                                </span>
+                                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-200 shadow-sm">
+                                                    <span>👥</span>
+                                                    {service.capacity} {t('dashboard.services.capacity')}
+                                                </span>
+                                            </div>
+                                            <div className={`flex justify-center gap-3 pt-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                                                 <ActionButtons
                                                     onEdit={() => { setEditingService(service); setIsModalOpen(true); }}
                                                     onDelete={() => handleDeleteClick(service.id)}
@@ -279,61 +291,68 @@ const ServicesView: React.FC = () => {
                                 {services.length === 0 && (
                                     <div className="text-center p-8">
                                         <BriefcaseIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                                        <p className="text-gray-500 dark:text-gray-400">لم تتم إضافة خدمات بعد.</p>
+                                        <p className="text-gray-500 dark:text-gray-400">{t('dashboard.services.noServices')}</p>
                                     </div>
                                 )}
                             </div>
 
                             {/* Desktop View - Table */}
-                            <div className="hidden md:block overflow-x-auto">
-                                <table className="w-full min-w-full border-collapse border border-gray-200 dark:border-gray-700">
-                                    <thead>
-                                        <tr className="bg-gray-50 dark:bg-gray-800">
-                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-sm">
-                                                اسم الخدمة
-                                            </th>
-                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-sm">
-                                                السعر (ل.س)
-                                            </th>
-                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-sm">
-                                                السعة (مريض)
-                                            </th>
-                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-300 text-sm">
-                                                الإجراءات
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {services.map(service => (
-                                            <tr key={service.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-gray-900 dark:text-gray-100 font-medium text-sm">
-                                                    {service.service_name}
-                                                </td>
-                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-blue-600 dark:text-blue-400 font-semibold text-sm">
-                                                    {service.price}
-                                                </td>
-                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-gray-700 dark:text-gray-300 text-sm">
-                                                    {service.capacity}
-                                                </td>
-                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-3">
-                                                    <ActionButtons
-                                                        onEdit={() => { setEditingService(service); setIsModalOpen(true); }}
-                                                        onDelete={() => handleDeleteClick(service.id)}
-                                                        size="sm"
-                                                    />
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        {services.length === 0 && (
+                            <div className="hidden md:block">
+                                <div className="w-full max-w-5xl mx-auto overflow-x-auto rounded-2xl border border-blue-100 dark:border-blue-900/40 bg-white/90 dark:bg-gray-900/60 shadow-sm shadow-blue-100/50 px-2">
+                                    <table className="w-full text-sm text-gray-700 dark:text-gray-200 md:min-w-[48rem] lg:min-w-[52rem]">
+                                        <thead className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 text-blue-900 dark:text-blue-100 uppercase tracking-wide text-xs">
                                             <tr>
-                                                <td colSpan={4} className="border border-gray-200 dark:border-gray-700 px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                                                    <BriefcaseIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                                                    <p>لم تتم إضافة خدمات بعد.</p>
-                                                </td>
+                                                <th className={`px-4 py-3 font-semibold border-b border-blue-100/70 dark:border-blue-900/40 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                    {t('dashboard.services.serviceName')}
+                                                </th>
+                                                <th className={`px-4 py-3 font-semibold border-b border-blue-100/70 dark:border-blue-900/40 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                    {t('dashboard.services.price')}
+                                                </th>
+                                                <th className={`px-4 py-3 font-semibold border-b border-blue-100/70 dark:border-blue-900/40 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                    {t('dashboard.services.capacity')}
+                                                </th>
+                                                <th className="px-4 py-3 font-semibold border-b border-blue-100/70 dark:border-blue-900/40 text-center">
+                                                    {t('common.actions')}
+                                                </th>
                                             </tr>
-                                        )}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {services.map(service => (
+                                                <tr
+                                                    key={service.id}
+                                                    className="odd:bg-white even:bg-blue-50/40 dark:odd:bg-gray-900/60 dark:even:bg-gray-900/40 hover:bg-blue-100/40 dark:hover:bg-blue-900/30 transition-colors"
+                                                >
+                                                    <td className={`px-4 py-4 font-medium text-gray-900 dark:text-gray-100 ${isRTL ? 'text-right' : 'text-left'}`}>
+                                                        {service.service_name}
+                                                    </td>
+                                                    <td className={`px-4 py-4 font-semibold text-blue-600 dark:text-blue-300 ${isRTL ? 'text-right' : 'text-left'}`}>
+                                                        {service.price}
+                                                    </td>
+                                                    <td className={`px-4 py-4 text-gray-700 dark:text-gray-300 ${isRTL ? 'text-right' : 'text-left'}`}>
+                                                        {service.capacity}
+                                                    </td>
+                                                    <td className="px-4 py-4">
+                                                        <div className={`flex justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+                                                            <ActionButtons
+                                                                onEdit={() => { setEditingService(service); setIsModalOpen(true); }}
+                                                                onDelete={() => handleDeleteClick(service.id)}
+                                                                size="sm"
+                                                            />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {services.length === 0 && (
+                                                <tr>
+                                                    <td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                                        <BriefcaseIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                                                        <p>{t('dashboard.services.noServices')}</p>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </>
                     )}
@@ -345,26 +364,26 @@ const ServicesView: React.FC = () => {
                 <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
                     <Card className="w-full max-w-md dark:bg-gray-800">
                         <CardHeader>
-                            <CardTitle>{editingService ? 'تعديل الخدمة' : 'إضافة خدمة جديدة'}</CardTitle>
+                            <CardTitle>{editingService ? t('dashboard.services.editService') : t('dashboard.services.addService')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                         <form onSubmit={handleFormSubmit} className="space-y-4">
                             {!editingService && (
                                     <Input
-                                        label="اسم الخدمة"
+                                        label={t('dashboard.services.serviceName')}
                                         name="service_name"
                                         required
                                     />
                                 )}
                                 <Input
-                                    label="السعر (ل.س)"
+                                    label={t('dashboard.services.price')}
                                     name="price"
                                     type="number"
                                     defaultValue={editingService?.price}
                                     required
                                 />
                                 <Input
-                                    label="السعة (عدد المرضى)"
+                                    label={t('dashboard.services.capacity')}
                                     name="capacity"
                                     type="number"
                                     defaultValue={editingService?.capacity}
@@ -376,10 +395,10 @@ const ServicesView: React.FC = () => {
                                         onClick={() => setIsModalOpen(false)} 
                                         variant="outline"
                                     >
-                                        إلغاء
+                                        {t('common.cancel')}
                                     </Button>
                                     <Button type="submit" section="services">
-                                        حفظ
+                                        {t('common.save')}
                                     </Button>
                             </div>
                         </form>
@@ -393,10 +412,10 @@ const ServicesView: React.FC = () => {
                 isOpen={confirmDelete.isOpen}
                 onClose={() => setConfirmDelete({ isOpen: false, serviceId: null })}
                 onConfirm={handleDeleteConfirm}
-                title="تأكيد حذف الخدمة"
-                description="هل أنت متأكد من حذف هذه الخدمة؟ لن تتمكن من التراجع عن هذا الإجراء."
-                confirmText="حذف"
-                cancelText="إلغاء"
+                title={t('common.confirm')}
+                description={t('dashboard.services.deleteConfirm')}
+                confirmText={t('common.delete')}
+                cancelText={t('common.cancel')}
                 type="danger"
             />
         </div>
@@ -405,6 +424,8 @@ const ServicesView: React.FC = () => {
 
 
 const ScheduleView: React.FC = () => {
+    const { t, i18n } = useTranslation();
+    const isRTL = i18n.dir() === 'rtl';
     const [schedules, setSchedules] = useState<WorkSchedule[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -413,9 +434,19 @@ const ScheduleView: React.FC = () => {
         dayId: null 
     });
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const daysOfWeekArabic: { [key: string]: string } = {
-        'Sunday': 'الأحد', 'Monday': 'الاثنين', 'Tuesday': 'الثلاثاء', 'Wednesday': 'الأربعاء', 
-        'Thursday': 'الخميس', 'Friday': 'الجمعة', 'Saturday': 'السبت'
+    
+    const getDayName = (day: string) => {
+        const dayKey = day.toLowerCase() as 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday';
+        const keyMap: { [key: string]: string } = {
+            'sunday': 'sunday',
+            'monday': 'monday',
+            'tuesday': 'tuesday',
+            'wednesday': 'wednesday',
+            'thursday': 'thursday',
+            'friday': 'friday',
+            'saturday': 'saturday'
+        };
+        return t(`dashboard.schedule.${keyMap[day.toLowerCase()] || day.toLowerCase()}`);
     };
 
     const fetchSchedules = useCallback(async () => {
@@ -425,12 +456,12 @@ const ScheduleView: React.FC = () => {
             const data = await api.getWorkSchedules();
             setSchedules(data);
         } catch (error) {
-            setError('فشل في جلب جدول العمل. تأكد من اتصال الخادم.');
+            setError(t('dashboard.schedule.fetchError'));
             setSchedules([]);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [i18n.language, t]);
 
     useEffect(() => {
         fetchSchedules();
@@ -441,19 +472,19 @@ const ScheduleView: React.FC = () => {
         const formData = new FormData(e.currentTarget);
         const day = formData.get('day_of_week') as string;
         if (schedules.find(s => s.day_of_week.toLowerCase() === day.toLowerCase())) {
-            showToast.warning('هذا اليوم مضاف بالفعل.');
+            showToast.warning(t('dashboard.schedule.alreadyAdded'));
             return;
         }
-        const loadingToast = showToast.loading('جاري إضافة اليوم...');
+        const loadingToast = showToast.loading(t('dashboard.schedule.adding'));
         try {
             await api.addWorkSchedule(day);
             showToast.dismiss(loadingToast);
-            showToast.success('تم إضافة اليوم بنجاح');
+            showToast.success(t('dashboard.schedule.addSuccess'));
             fetchSchedules();
             (e.target as HTMLFormElement).reset();
         } catch (error: any) {
             showToast.dismiss(loadingToast);
-            showToast.error(`فشل في إضافة اليوم: ${error.message}`);
+            showToast.error(`${t('dashboard.schedule.addError')}: ${error.message}`);
         }
     };
     
@@ -464,22 +495,22 @@ const ScheduleView: React.FC = () => {
     const handleDeleteDayConfirm = async () => {
         if (!confirmDelete.dayId) return;
         
-        const loadingToast = showToast.loading('جاري حذف اليوم...');
+        const loadingToast = showToast.loading(t('dashboard.schedule.deleting'));
         try {
             await api.deleteWorkSchedule(confirmDelete.dayId);
             showToast.dismiss(loadingToast);
-            showToast.success('تم حذف اليوم بنجاح');
+            showToast.success(t('dashboard.schedule.deleteSuccess'));
             fetchSchedules();
         } catch (error: any) {
             showToast.dismiss(loadingToast);
-            showToast.error(`فشل في حذف اليوم: ${error.message}`);
+            showToast.error(`${t('dashboard.schedule.deleteError')}: ${error.message}`);
         } finally {
             setConfirmDelete({ isOpen: false, dayId: null });
         }
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 w-full max-w-5xl mx-auto px-2 sm:px-0">
             {error && (
                 <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4">
                     <div className="flex items-center">
@@ -488,29 +519,29 @@ const ScheduleView: React.FC = () => {
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                             </svg>
                         </div>
-                        <div className="ml-3">
+                        <div className={isRTL ? 'mr-3' : 'ml-3'}>
                             <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
                             <button 
                                 onClick={fetchSchedules}
                                 className="text-sm text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 underline"
                             >
-                                إعادة المحاولة
+                                {t('dashboard.schedule.retry')}
                             </button>
                         </div>
                     </div>
                 </div>
             )}
             
-            <Card>
+            <Card className="w-full">
                 <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <CardTitle className="flex items-center gap-2">
+                    <div className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between ${isRTL ? 'sm:flex-row-reverse text-right' : ''}`}>
+                        <div className="space-y-1">
+                            <CardTitle className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse justify-end' : ''}`}>
                                 <CalendarIcon className="w-5 h-5 text-green-600" />
-                                إضافة يوم عمل جديد
+                                {t('dashboard.schedule.title')}
                             </CardTitle>
-                            <CardDescription>
-                                اختر الأيام التي يعمل فيها المستشفى
+                            <CardDescription className={isRTL ? 'text-right' : ''}>
+                                {t('dashboard.schedule.description')}
                             </CardDescription>
                         </div>
                         <Button 
@@ -518,7 +549,7 @@ const ScheduleView: React.FC = () => {
                             disabled={loading}
                             variant="outline"
                             size="sm"
-                            className="flex items-center gap-2"
+                            className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
                         >
                             {loading ? (
                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
@@ -527,31 +558,35 @@ const ScheduleView: React.FC = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
                             )}
-                            تحديث
+                            {t('dashboard.schedule.refresh')}
                         </Button>
                     </div>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleAddDay} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${isRTL ? 'text-right' : ''}`}>
                             <div>
                                 <label htmlFor="day_of_week" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    اختر يوماً
+                                    {t('dashboard.schedule.selectDay')}
                                 </label>
                                 <select 
                                     name="day_of_week" 
                                     id="day_of_week" 
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:text-black"
+                                    className={`flex h-10 w-full rounded-md border border-input bg-background py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:text-black ${isRTL ? 'pl-3 pr-8 text-right' : 'pl-3 pr-8'}`}
                                 >
                            {daysOfWeek.map(day => (
-                               <option key={day} value={day}>{daysOfWeekArabic[day]}</option>
+                               <option key={day} value={day}>{getDayName(day)}</option>
                            ))}
                         </select>
                     </div>
-                            <div className="flex items-end">
-                                <Button type="submit" section="hospital" className="w-full md:w-auto text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10">
-                                    <PlusCircleIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                    إضافة اليوم
+                            <div className={`flex items-end ${isRTL ? 'justify-end' : ''}`}>
+                                <Button
+                                    type="submit"
+                                    section="hospital"
+                                    className={`w-full md:w-auto flex items-center justify-center gap-2 text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10 ${isRTL ? 'flex-row-reverse' : ''}`}
+                                >
+                                    <PlusCircleIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+                                    {t('dashboard.schedule.addDay')}
                                 </Button>
                             </div>
                         </div>
@@ -559,14 +594,14 @@ const ScheduleView: React.FC = () => {
                 </CardContent>
             </Card>
 
-            <Card>
+            <Card className="w-full">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse justify-end' : ''}`}>
                         <ClockIcon className="w-5 h-5 text-green-600" />
-                        أيام العمل الحالية
+                        {t('dashboard.schedule.currentDays')}
                     </CardTitle>
-                    <CardDescription>
-                        الأيام المحددة للعمل في المستشفى
+                    <CardDescription className={isRTL ? 'text-right' : ''}>
+                        {t('dashboard.schedule.currentDaysDesc')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -574,25 +609,28 @@ const ScheduleView: React.FC = () => {
                         <div className="flex items-center justify-center p-8">
                             <div className="text-center">
                                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 dark:border-green-400 mx-auto mb-4"></div>
-                                <p className="text-gray-600 dark:text-gray-400">جاري التحميل...</p>
+                                <p className="text-gray-600 dark:text-gray-400">{t('common.loading')}</p>
                             </div>
                         </div>
                     ) : (
                         <>
                             {/* Mobile View - Cards */}
-                            <div className="block md:hidden space-y-3">
+                            <div className="block md:hidden space-y-4 w-full">
                                 {schedules.map(schedule => (
-                                    <Card key={schedule.id} className="border-r-4 border-r-green-500">
-                                        <CardContent className="p-3">
-                                            <div className="flex items-center justify-between gap-2">
-                                                <div className="flex items-center gap-3 flex-1">
-                                                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                                                        <CalendarIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
-                                                    </div>
-                                                    <span className="font-bold text-gray-900 dark:text-gray-100 text-sm">
-                                                        {daysOfWeekArabic[schedule.day_of_week.charAt(0).toUpperCase() + schedule.day_of_week.slice(1)] || schedule.day_of_week}
-                                                    </span>
+                                    <Card
+                                        key={schedule.id}
+                                        className="w-full border border-green-200 dark:border-green-500/40 rounded-xl shadow-sm bg-white/80 dark:bg-gray-800/70 backdrop-blur"
+                                    >
+                                        <CardContent className="p-4 space-y-4 text-center">
+                                            <div className="flex justify-center">
+                                                <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shadow-inner">
+                                                    <CalendarIcon className="w-6 h-6 text-green-600 dark:text-green-300" />
                                                 </div>
+                                            </div>
+                                            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                                                {getDayName(schedule.day_of_week)}
+                                            </h3>
+                                            <div className={`flex justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
                                                 <ActionButtons
                                                     onDelete={() => handleDeleteDayClick(schedule.id)}
                                                     showEdit={false}
@@ -605,56 +643,63 @@ const ScheduleView: React.FC = () => {
                                 {schedules.length === 0 && (
                                     <div className="text-center p-8">
                                         <CalendarIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                                        <p className="text-gray-500 dark:text-gray-400">لم تتم إضافة أيام عمل بعد.</p>
+                                        <p className="text-gray-500 dark:text-gray-400">{t('dashboard.schedule.noDays')}</p>
                                     </div>
                                 )}
                             </div>
 
                             {/* Desktop View - Table */}
-                            <div className="hidden md:block overflow-x-auto">
-                                <table className="w-full min-w-full border-collapse border border-gray-200 dark:border-gray-700">
-                                    <thead>
-                                        <tr className="bg-gray-50 dark:bg-gray-800">
-                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300 text-sm">
-                                                يوم العمل
-                                            </th>
-                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-300 text-sm">
-                                                الإجراءات
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {schedules.map(schedule => (
-                                            <tr key={schedule.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-3">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                                                            <CalendarIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
-                                                        </div>
-                                                        <span className="font-semibold text-gray-800 dark:text-gray-100 text-sm">
-                                                            {daysOfWeekArabic[schedule.day_of_week.charAt(0).toUpperCase() + schedule.day_of_week.slice(1)] || schedule.day_of_week}
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-3">
-                                                    <ActionButtons
-                                                        onDelete={() => handleDeleteDayClick(schedule.id)}
-                                                        showEdit={false}
-                                                        size="sm"
-                                                    />
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        {schedules.length === 0 && (
+                            <div className="hidden md:block">
+                                <div className="w-full max-w-4xl mx-auto overflow-x-auto rounded-2xl border border-green-100 dark:border-green-900/40 bg-white/90 dark:bg-gray-900/60 shadow-sm shadow-green-100/50">
+                                    <table className="min-w-[36rem] w-full text-sm text-gray-700 dark:text-gray-200">
+                                        <thead className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 text-green-900 dark:text-green-100 uppercase tracking-wide text-xs">
                                             <tr>
-                                                <td colSpan={2} className="border border-gray-200 dark:border-gray-700 px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                                                    <CalendarIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                                                    <p>لم تتم إضافة أيام عمل بعد.</p>
-                                                </td>
+                                                <th className={`px-4 py-3 font-semibold border-b border-green-100/70 dark:border-green-900/40 ${isRTL ? 'text-right' : 'text-left'}`}>
+                                                    {t('dashboard.schedule.workDay')}
+                                                </th>
+                                                <th className="px-4 py-3 font-semibold border-b border-green-100/70 dark:border-green-900/40 text-center">
+                                                    {t('common.actions')}
+                                                </th>
                                             </tr>
-                                        )}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {schedules.map(schedule => (
+                                                <tr
+                                                    key={schedule.id}
+                                                    className="odd:bg-white even:bg-green-50/40 dark:odd:bg-gray-900/60 dark:even:bg-gray-900/40 hover:bg-green-100/40 dark:hover:bg-green-900/30 transition-colors"
+                                                >
+                                                    <td className={`px-4 py-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                                                        <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                                                            <div className="w-8 h-8 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center flex-shrink-0">
+                                                                <CalendarIcon className="w-4 h-4 text-green-600 dark:text-green-300" />
+                                                            </div>
+                                                            <span className="font-semibold text-gray-800 dark:text-gray-100">
+                                                                {getDayName(schedule.day_of_week)}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-4 py-4">
+                                                        <div className={`flex justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+                                                            <ActionButtons
+                                                                onDelete={() => handleDeleteDayClick(schedule.id)}
+                                                                showEdit={false}
+                                                                size="sm"
+                                                            />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {schedules.length === 0 && (
+                                                <tr>
+                                                    <td colSpan={2} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                                        <CalendarIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                                                        <p>{t('dashboard.schedule.noDays')}</p>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </>
                     )}
@@ -666,10 +711,10 @@ const ScheduleView: React.FC = () => {
                 isOpen={confirmDelete.isOpen}
                 onClose={() => setConfirmDelete({ isOpen: false, dayId: null })}
                 onConfirm={handleDeleteDayConfirm}
-                title="تأكيد حذف يوم العمل"
-                description="هل أنت متأكد من حذف هذا اليوم من جدول العمل؟"
-                confirmText="حذف"
-                cancelText="إلغاء"
+                title={t('common.confirm')}
+                description={t('dashboard.schedule.deleteConfirm')}
+                confirmText={t('common.delete')}
+                cancelText={t('common.cancel')}
                 type="danger"
             />
         </div>
@@ -678,6 +723,7 @@ const ScheduleView: React.FC = () => {
 
 
 const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
+  const { t, i18n } = useTranslation();
   const [view, setView] = useState<View>('overview');
   const [profile, setProfile] = useState<{hospital: Hospital | null; account: Account | null}>({ hospital: null, account: null });
   const [loadingProfile, setLoadingProfile] = useState(true);
@@ -693,7 +739,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     } finally {
       setLoadingProfile(false);
     }
-  }, [onLogout]);
+  }, [i18n.language, onLogout]);
 
   useEffect(() => {
     fetchProfileData();
@@ -709,7 +755,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     }
   };
   
-  // دالة للتنقل بين التبويبات مع التحقق من النوع
+  // Function to navigate between tabs with type checking
   const handleNavigate = (tab: string) => {
     if (tab === 'overview' || tab === 'profile' || tab === 'services' || tab === 'schedule' || tab === 'reservations' || tab === 'history') {
       setView(tab as View);
@@ -738,39 +784,39 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const getTabInfo = () => {
     switch (view) {
       case 'overview':
-        return null; // لا تظهر معلومات البانر للصفحة الرئيسية
+        return null;
       case 'profile':
         return {
-          title: 'الملف الشخصي للمستشفى',
-          description: 'عرض وتعديل معلومات المستشفى الأساسية',
+          title: t('dashboard.profile.title'),
+          description: t('dashboard.profile.description'),
           icon: '👤',
           color: 'from-teal-500 to-cyan-600'
         };
       case 'services':
         return {
-          title: 'إدارة الخدمات الطبية',
-          description: 'إدارة الخدمات والأسعار والمواعيد',
+          title: t('dashboard.services.title'),
+          description: t('dashboard.services.description'),
           icon: '🏥',
           color: 'from-blue-500 to-cyan-600'
         };
       case 'schedule':
         return {
-          title: 'جدول أيام العمل',
-          description: 'إدارة أوقات العمل الأسبوعية',
+          title: t('dashboard.navigation.workSchedule'),
+          description: t('dashboard.schedule.description'),
           icon: '📅',
           color: 'from-green-500 to-emerald-600'
         };
       case 'reservations':
         return {
-          title: 'الحجوزات قيد الانتظار',
-          description: 'عرض وإدارة الحجوزات التي تحتاج إلى مراجعة',
+          title: t('dashboard.navigation.reservations'),
+          description: t('dashboard.navigation.reservations'),
           icon: '⏳',
           color: 'from-purple-500 to-indigo-600'
         };
       case 'history':
         return {
-          title: 'سجل الحجوزات',
-          description: 'عرض جميع الحجوزات المؤكدة والملغاة',
+          title: t('dashboard.navigation.reservationHistory'),
+          description: t('dashboard.navigation.history'),
           icon: '📜',
           color: 'from-indigo-500 to-purple-600'
         };
@@ -805,12 +851,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       {/* Main Layout - No Sidebar */}
       <div className="flex-1 flex flex-col pt-14 sm:pt-16">
         {/* Main Content */}
-        <main className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-900">
-          {/* Header Section - يظهر فقط في الأقسام المحددة */}
+        <main className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-900 items-stretch">
+          {/* Header Section - Only shown for specified sections */}
           {tabInfo && (
             <div className={`bg-gradient-to-r ${tabInfo.color} text-white shadow-lg w-full`}> 
               <div className="px-2 sm:px-4 py-3">
-                <div className="flex items-center space-x-2 space-x-reverse">
+                <div className={`flex items-center gap-2 ${i18n.language === 'ar' ? 'flex-row-reverse' : 'flex-row'}`}>
                   <div className="text-2xl">{tabInfo.icon}</div>
                   <div>
                     <h1 className="text-base sm:text-lg font-bold">{tabInfo.title}</h1>

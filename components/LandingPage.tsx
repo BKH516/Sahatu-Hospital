@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { HospitalIcon } from './ui/icons';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import ThemeToggle from './ui/ThemeToggle';
+import LanguageToggle from './ui/LanguageToggle';
 
 interface LandingPageProps {
   onNavigateToLogin: () => void;
@@ -10,11 +12,16 @@ interface LandingPageProps {
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigateToRegister }) => {
+  const { t, i18n } = useTranslation();
   const [activeFeature, setActiveFeature] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [scrollY, setScrollY] = useState(0);
   const [showFeatureModal, setShowFeatureModal] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState<number | null>(null);
+  const isRTL = i18n.language === 'ar';
+  const cardTextDirection = isRTL ? 'text-right' : 'text-left';
+  const cardIconAlignment = isRTL ? 'self-end' : 'self-start';
+  const cardLinkAlignment = isRTL ? 'self-end' : 'self-start';
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -54,17 +61,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
         </svg>
       ),
-      title: "أمان متقدم",
-      description: "حماية شاملة لبيانات المستشفى والمرضى بتقنيات التشفير المتقدمة",
-      detailedDescription: `
-        • تشفير SSL/TLS 256-bit لحماية البيانات
-        • نظام مصادقة متعدد المستويات
-        • نسخ احتياطية يومية تلقائية
-        • مراقبة أمنية على مدار الساعة
-        • امتثال لمعايير الأمان الدولية (HIPAA, GDPR)
-        • حماية من التهديدات السيبرانية
-        • نظام تسجيل شامل لجميع العمليات
-      `
+      title: t('landing.features.advancedSecurity.title'),
+      description: t('landing.features.advancedSecurity.description'),
+      detailedDescription: t('landing.features.advancedSecurity.details')
     },
     {
       icon: (
@@ -72,17 +71,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       ),
-      title: "أداء فائق",
-      description: "سرعة عالية في المعالجة مع واجهة سهلة الاستخدام",
-      detailedDescription: `
-        • معالجة فورية للبيانات والطلبات
-        • خوادم عالية الأداء مع SSD
-        • شبكة CDN عالمية للوصول السريع
-        • واجهة مستخدم بديهية ومتجاوبة
-        • تحميل سريع للصفحات (< 2 ثانية)
-        • دعم العمل على جميع الأجهزة
-        • تحديثات تلقائية بدون توقف الخدمة
-      `
+      title: t('landing.features.highPerformance.title'),
+      description: t('landing.features.highPerformance.description'),
+      detailedDescription: t('landing.features.highPerformance.details')
     },
     {
       icon: (
@@ -90,18 +81,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
         </svg>
       ),
-      title: "إدارة شاملة",
-      description: "نظام متكامل لإدارة جميع العمليات الطبية والإدارية",
-      detailedDescription: `
-        • إدارة كاملة لملفات المرضى
-        • نظام حجز المواعيد المتقدم
-        • إدارة الصيدلية والمخزون
-        • نظام الفواتير والمدفوعات
-        • إدارة الموظفين والجدول الزمني
-        • تتبع العمليات الجراحية
-        • نظام الإشعارات والتنبيهات
-        • تكامل مع الأجهزة الطبية
-      `
+      title: t('landing.features.comprehensiveManagement.title'),
+      description: t('landing.features.comprehensiveManagement.description'),
+      detailedDescription: t('landing.features.comprehensiveManagement.details')
     },
     {
       icon: (
@@ -109,26 +91,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 100 19.5 9.75 9.75 0 000-19.5z" />
         </svg>
       ),
-      title: "دعم فني متقدم",
-      description: "دعم فني على مدار الساعة مع حلول سريعة ومبتكرة",
-      detailedDescription: `
-        • دعم فني متاح 24/7 على مدار السنة
-        • فريق من الخبراء المتخصصين في التقنيات الطبية
-        • استجابة فورية للاستفسارات والمشاكل
-        • تدريب شامل للموظفين على استخدام النظام
-        • صيانة دورية وحديثات تلقائية
-        • نظام تذكرة متقدم لتتبع الطلبات
-        • دعم عن بُعد لحل المشاكل فوراً
-        • وثائق شاملة وأدلة استخدام تفصيلية
-      `
+      title: t('landing.features.advancedSupport.title'),
+      description: t('landing.features.advancedSupport.description'),
+      detailedDescription: t('landing.features.advancedSupport.details')
     }
   ];
 
   const stats = [
-    { number: "500+", label: "مستشفى" },
-    { number: "50K+", label: "مريض" },
-    { number: "99.9%", label: "وقت التشغيل" },
-    { number: "24/7", label: "دعم فني" }
+    { number: "500+", label: t('landing.stats.hospitals') },
+    { number: "50K+", label: t('landing.stats.patients') },
+    { number: "99.9%", label: t('landing.stats.uptime') },
+    { number: "24/7", label: t('landing.stats.support') }
   ];
 
   return (
@@ -175,14 +148,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
             </div>
             <div className="min-w-0">
               <h1 className="text-base sm:text-base md:text-lg lg:text-xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                صحتي
+                {t('common.appName')}
               </h1>
               <p className="text-xs sm:text-xs text-gray-600 dark:text-gray-400">
-                منصة طبية متكاملة
+                {t('common.appTagline')}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 min-w-0 mr-1.5 sm:mr-2 lg:mr-3 ml-5 sm:ml-2 lg:ml-3">
+          <div className={`flex items-center gap-2 sm:gap-4 flex-shrink-0 min-w-0 ${isRTL ? 'mr-1.5 sm:mr-2 lg:mr-3 ml-5 sm:ml-2 lg:ml-3' : 'ml-1.5 sm:ml-2 lg:ml-3 mr-5 sm:mr-2 lg:mr-3'}`}>
+            <div className="flex-shrink-0">
+              <LanguageToggle />
+            </div>
             <div className="flex-shrink-0">
               <ThemeToggle />
             </div>
@@ -191,185 +167,209 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
               section="hospital"
               className="px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-sm md:text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 transform flex-shrink-0 whitespace-nowrap"
             >
-              تسجيل دخول
+              {t('landing.loginButton')}
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative px-2 sm:px-4 lg:px-8 py-4 sm:py-8 lg:py-24 min-h-[85vh] flex items-center">
-        <div className="max-w-7xl mx-auto flex justify-center">
-          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-12 items-center justify-center lg:justify-between max-w-2xl mx-auto lg:max-w-none lg:mx-0">
-            {/* Left Side - Content */}
-            <div className="flex flex-col items-center lg:items-end text-center lg:text-right space-y-3 sm:space-y-4 lg:space-y-8 max-w-2xl mx-auto lg:max-w-none lg:mx-0 lg:w-full self-center">
-              <div className="space-y-3 sm:space-y-3 md:space-y-4 lg:space-y-6 w-full flex flex-col items-center lg:items-end">
-                <h2 
-                  className="text-3xl max-[360px]:text-[1.9rem] sm:text-2xl md:text-3xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight"
-                  style={{
-                    textShadow: `0 0 20px rgba(20, 184, 166, 0.3)`
-                  }}
-                >
-                  مستقبل الرعاية الصحية
-                  <span
-                    className="block mt-0 lg:mt-2 bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent font-extrabold antialiased drop-shadow-sm lg:drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]"
-                    style={{ WebkitTextStroke: '0.2px rgba(0,0,0,0.2)' }}
-                  >
-                    يبدأ معنا
-                  </span>
-                </h2>
-                <p 
-                  className="text-base max-[360px]:text-[1.05rem] sm:text-sm md:text-base lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl px-2 sm:px-0"
-                >
-                  منصة صحتي توفر حلولاً متكاملة لإدارة المستشفيات والعيادات الطبية 
-                  بأحدث التقنيات وأعلى معايير الأمان
-                </p>
-              </div>
+      {/* Hero Section - New Professional Design */}
+      <section className="relative px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24 min-h-[88vh] flex items-center justify-center overflow-hidden">
+        {/* Animated Background with Medical Theme */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Primary gradient orbs */}
+          <div
+            className="absolute top-0 left-1/4 w-96 h-96 sm:w-[32rem] sm:h-[32rem] bg-gradient-to-br from-teal-400/20 via-cyan-400/15 to-transparent rounded-full blur-3xl"
+            style={{
+              transform: `translate(${mousePosition.x * 0.15}px, ${mousePosition.y * 0.15}px)`,
+            }}
+          />
+          <div
+            className="absolute bottom-0 right-1/4 w-80 h-80 sm:w-[28rem] sm:h-[28rem] bg-gradient-to-tl from-blue-400/20 via-indigo-400/15 to-transparent rounded-full blur-3xl"
+            style={{
+              transform: `translate(${-mousePosition.x * 0.12}px, ${-mousePosition.y * 0.12}px)`,
+            }}
+          />
+          
+          {/* Medical grid pattern */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(20,184,166,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(20,184,166,0.03)_1px,transparent_1px)] bg-[size:32px_32px] dark:bg-[linear-gradient(to_right,rgba(20,184,166,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(20,184,166,0.05)_1px,transparent_1px)]" />
+          
+          {/* Animated lines */}
+          <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-teal-500/10 to-transparent" 
+            style={{ transform: `translateY(${Math.sin(scrollY * 0.005) * 15}px)` }} 
+          />
+        </div>
 
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4 justify-center w-full">
-                <Button
-                  onClick={onNavigateToRegister}
-                  section="hospital"
-                  className="px-5 py-[14px] max-[360px]:px-6 max-[360px]:py-[14px] sm:px-6 sm:py-3 lg:px-8 lg:py-4 text-base max-[360px]:text-[1.05rem] sm:text-base lg:text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105"
-                  style={{
-                    background: 'linear-gradient(135deg, #0d9488 0%, #0891b2 50%, #0284c7 100%)',
-                    boxShadow: '0 10px 30px rgba(13, 148, 136, 0.4)'
-                  }}
-                >
-                  إنشاء حساب جديد
-                </Button>
-                <Button
-                  onClick={onNavigateToLogin}
-                  variant="outline"
-                  className="px-5 py-[14px] max-[360px]:px-6 max-[360px]:py-[14px] sm:px-6 sm:py-3 lg:px-8 lg:py-4 text-base max-[360px]:text-[1.05rem] sm:text-base lg:text-lg font-semibold border-2 border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white transition-all duration-300 transform hover:-translate-y-1 hover:scale-105"
-                  style={{
-                    backdropFilter: 'blur(10px)',
-                    boxShadow: '0 10px 30px rgba(13, 148, 136, 0.2)'
-                  }}
-                >
-                  تسجيل الدخول
-                </Button>
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col items-center text-center space-y-8 sm:space-y-10 lg:space-y-12">
+            
+            {/* Badge with pulse effect */}
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border border-teal-200/60 dark:border-teal-700/40 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
               </div>
+              <span className="text-xs sm:text-sm font-semibold text-teal-700 dark:text-teal-300">
+                {t('landing.badge')}
+              </span>
+            </div>
 
-              {/* Stats */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3 lg:gap-6 pt-3 sm:pt-4 lg:pt-8 w-full max-w-2xl mx-auto lg:max-w-none justify-items-center lg:justify-items-start">
-                {stats.map((stat, index) => (
-                  <div 
-                    key={index} 
-                    className="text-center p-3 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl lg:rounded-2xl backdrop-blur-sm bg-white/20 dark:bg-gray-800/20 border border-white/30 dark:border-gray-700/30 w-full"
-                    style={{
-                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
-                    }}
-                  >
-                    <div className="text-xl max-[360px]:text-[1.25rem] sm:text-base md:text-xl lg:text-3xl font-bold text-teal-600 dark:text-teal-400">
+            {/* Main Title with elegant styling */}
+            <div className="space-y-4 sm:space-y-5 max-w-4xl mx-auto">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-[1.1] tracking-tight">
+                <span className="block mb-3 sm:mb-4">
+                  {t('landing.title')}
+                </span>
+                <span className="block bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 dark:from-teal-400 dark:via-cyan-400 dark:to-blue-400 bg-clip-text text-transparent">
+                  {t('landing.titleSub')}
+                </span>
+              </h1>
+            </div>
+
+            {/* Description */}
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto px-4">
+              {t('landing.description')}
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center pt-2">
+              <Button
+                onClick={onNavigateToRegister}
+                section="hospital"
+                className="group relative px-7 py-3 sm:px-8 sm:py-3.5 lg:px-10 lg:py-4 text-sm sm:text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, #0d9488 0%, #0891b2 50%, #0284c7 100%)',
+                  boxShadow: '0 10px 30px rgba(13, 148, 136, 0.35)'
+                }}
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  {t('landing.createAccount')}
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+              </Button>
+              
+              <Button
+                onClick={onNavigateToLogin}
+                variant="outline"
+                className="group px-7 py-3 sm:px-8 sm:py-3.5 lg:px-10 lg:py-4 text-sm sm:text-base font-semibold border-2 border-teal-600 dark:border-teal-400 text-teal-600 dark:text-white hover:bg-teal-600 dark:hover:bg-teal-500 hover:text-white transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] backdrop-blur-sm bg-white/70 dark:bg-gray-800/70"
+                style={{
+                  boxShadow: '0 4px 20px rgba(13, 148, 136, 0.2)'
+                }}
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  {t('landing.login')}
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                  </svg>
+                </span>
+              </Button>
+            </div>
+
+            {/* Stats Cards - Modern Grid Layout */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 pt-8 sm:pt-10 lg:pt-12 w-full max-w-5xl">
+              {stats.map((stat, index) => (
+                <div
+                  key={index}
+                  className="group relative overflow-hidden rounded-2xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border border-gray-200/60 dark:border-gray-700/50 p-5 sm:p-6 transition-all duration-300 hover:bg-white dark:hover:bg-gray-800 hover:border-teal-300 dark:hover:border-teal-600 hover:shadow-xl hover:-translate-y-1"
+                  style={{
+                    animationDelay: `${index * 100}ms`
+                  }}
+                >
+                  {/* Gradient accent line */}
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                  <div className="text-center">
+                    <div className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-teal-400 dark:to-cyan-400 bg-clip-text text-transparent mb-2">
                       {stat.number}
                     </div>
-                    <div className="text-sm max-[360px]:text-[0.9rem] sm:text-xs lg:text-sm text-gray-600 dark:text-gray-400">
+                    <div className="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-300 font-medium">
                       {stat.label}
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
 
-            {/* Right Side - 3D Visual */}
-            <div className="w-full flex justify-center items-center lg:block lg:w-auto">
-              <div className="relative px-3 sm:px-4 lg:px-0 w-full max-w-lg mx-auto lg:max-w-none">
-                <div className="relative z-10 w-full">
-                  <div 
-                    className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-2xl p-4 sm:p-4 md:p-6 lg:p-8 border border-white/20 dark:border-gray-700/20 w-full"
-                  style={{
-                    boxShadow: `
-                      0 25px 50px -12px rgba(0, 0, 0, 0.25),
-                      0 0 0 1px rgba(255, 255, 255, 0.1),
-                      inset 0 1px 0 rgba(255, 255, 255, 0.2)
-                    `
-                  }}
-                >
-                  <div className="space-y-4 sm:space-y-4 lg:space-y-6">
-                    <div className="flex items-center justify-center sm:justify-start gap-3 sm:gap-3">
-                      <div className="w-10 h-10 max-[360px]:w-11 max-[360px]:h-11 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg">
-                        <HospitalIcon className="w-6 h-6 max-[360px]:w-7 max-[360px]:h-7 sm:w-5 sm:h-5 md:w-6 md:h-7 text-white" />
-                      </div>
-                      <div className="text-center sm:text-right">
-                        <h3 className="text-lg max-[360px]:text-xl sm:text-base md:text-lg font-bold text-gray-900 dark:text-white">
-                          لوحة التحكم الرئيسية
-                        </h3>
-                        <p className="text-base max-[360px]:text-[1.05rem] sm:text-sm text-gray-600 dark:text-gray-400">
-                          إدارة شاملة لجميع العمليات
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-3 sm:gap-3 md:gap-4">
-                        {[
-                        { value: "1,247", label: "مريض نشط", color: "teal" },
-                        { value: "89", label: "طبيب", color: "blue" },
-                        { value: "156", label: "موعد اليوم", color: "cyan" },
-                        { value: "12", label: "غرفة متاحة", color: "indigo" }
-                      ].map((item, index) => (
-                        <div 
-                          key={index}
-                          className={`bg-${item.color}-50 dark:bg-${item.color}-900/20 rounded-lg sm:rounded-xl p-3 sm:p-3 md:p-4 transform transition-all duration-300 hover:scale-105 text-center`}
-                        >
-                          <div className={`text-xl max-[360px]:text-[1.25rem] sm:text-base md:text-xl lg:text-2xl font-bold text-${item.color}-600 dark:text-${item.color}-400`}>
-                            {item.value}
-                          </div>
-                          <div className="text-sm max-[360px]:text-[0.9rem] sm:text-xs md:text-sm text-gray-600 dark:text-gray-400">
-                            {item.label}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                
-                {/* 3D Background decorations */}
-                <div 
-                  className="absolute -top-4 -right-4 w-72 h-72 bg-gradient-to-br from-teal-400/30 to-cyan-400/30 rounded-full blur-3xl pointer-events-none -z-10"
-                  style={{
-                    transform: `translate(${mousePosition.x * 0.2}px, ${mousePosition.y * 0.2}px) rotate(${scrollY * 0.1}deg)`
-                  }}
-                />
-                <div 
-                  className="absolute -bottom-4 -left-4 w-72 h-72 bg-gradient-to-tr from-blue-400/30 to-indigo-400/30 rounded-full blur-3xl pointer-events-none -z-10"
-                  style={{
-                    transform: `translate(${-mousePosition.x * 0.15}px, ${-mousePosition.y * 0.15}px) rotate(${-scrollY * 0.1}deg)`
-                  }}
-                />
+            {/* Trust Badges */}
+            <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6 pt-6 sm:pt-8 pb-24 sm:pb-20 md:pb-16 lg:pb-12">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-50/50 dark:bg-teal-900/20 border border-teal-200/50 dark:border-teal-700/30">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-teal-600 dark:text-teal-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">{t('landing.trustBadges.secure')}</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-50/50 dark:bg-teal-900/20 border border-teal-200/50 dark:border-teal-700/30">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-teal-600 dark:text-teal-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">{t('landing.trustBadges.fastAndEasy')}</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-50/50 dark:bg-teal-900/20 border border-teal-200/50 dark:border-teal-700/30">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-teal-600 dark:text-teal-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">{t('landing.trustBadges.support247')}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Floating Medical Icon - Centered Visual Element */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 pointer-events-none opacity-10 dark:opacity-5 z-0"
+            style={{
+              transform: `translate(calc(-50% + ${mousePosition.x * 0.05}px), calc(-50% + ${mousePosition.y * 0.05}px))`,
+            }}
+          >
+            <div className="relative w-full h-full">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-full h-full bg-gradient-to-br from-teal-500/20 via-cyan-500/20 to-blue-500/20 rounded-full blur-3xl"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <HospitalIcon className="w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 text-teal-500/30 dark:text-teal-400/20" />
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 sm:bottom-10 md:bottom-12 lg:bottom-16 left-1/2 transform -translate-x-1/2 opacity-60 hover:opacity-100 transition-opacity z-10">
+          <div className="flex flex-col items-center gap-2 cursor-pointer group">
+            <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">{t('landing.discoverMoreShort')}</span>
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-teal-500 animate-bounce group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </div>
+        </div>
       </section>
 
       {/* Features Section */}
-      <section className="px-2 sm:px-4 lg:px-8 py-8 sm:py-12 lg:py-24 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center space-y-3 sm:space-y-3 md:space-y-4 lg:space-y-6 mb-6 sm:mb-6 lg:mb-16 w-full px-2 sm:px-0 flex flex-col items-center mx-auto transform-gpu translate-x-3 sm:translate-x-0">
+      <section className={`py-8 sm:py-12 lg:py-24 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm ${i18n.language === 'ar' ? 'px-2 sm:px-4 lg:px-8' : ''}`}>
+        <div className={`max-w-7xl mx-auto w-full ${i18n.language === 'en' ? 'px-4 sm:px-4 lg:px-8' : 'px-2 sm:px-4 lg:px-8'}`}>
+          <div className="text-center space-y-3 sm:space-y-3 md:space-y-4 lg:space-y-6 mb-6 sm:mb-6 lg:mb-16 w-full">
             <h2 
-              className="text-xl sm:text-xl md:text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white mx-auto text-center inline-block"
+              className="text-xl sm:text-xl md:text-3xl lg:text-5xl font-bold text-gray-900 dark:text-white text-center"
               style={{
                 textShadow: `0 0 20px rgba(20, 184, 166, 0.3)`
               }}
             >
-              لماذا تختار منصة صحتي؟
+              {t('landing.features.whyChoose')}
             </h2>
-            <p className="text-sm sm:text-sm md:text-base lg:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto px-2 sm:px-0">
-              نحن نقدم حلولاً متقدمة ومبتكرة لإدارة المستشفيات والعيادات الطبية
+            <p className="text-sm sm:text-sm md:text-base lg:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              {t('landing.features.whyChooseDesc')}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-8 justify-items-center mx-auto transform-gpu translate-x-3 sm:translate-x-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-8">
             {features.map((feature, index) => (
-              <Card
-                key={index}
-                className={`cursor-pointer transition-all duration-500 hover:shadow-xl border-2 ${
-                  activeFeature === index 
-                    ? 'border-teal-500 shadow-xl' 
-                    : 'border-gray-200 dark:border-gray-700 hover:border-teal-300'
-                } backdrop-blur-sm bg-white/60 dark:bg-gray-800/60 w-full max-w-sm`}
+              <div key={index} className="flex justify-center">
+                <Card
+                  className={`cursor-pointer transition-all duration-500 hover:shadow-xl border-2 ${
+                    activeFeature === index 
+                      ? 'border-teal-500 shadow-xl' 
+                      : 'border-gray-200 dark:border-gray-700 hover:border-teal-300'
+                  } backdrop-blur-sm bg-white/60 dark:bg-gray-800/60 w-full max-w-sm flex flex-col h-full`}
                 onClick={() => {
                   setActiveFeature(index);
                   handleFeatureClick(index);
@@ -380,8 +380,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
                     : '0 8px 20px -5px rgba(0, 0, 0, 0.1)'
                 }}
               >
-                <CardContent className="p-5 sm:p-6 text-center space-y-4 sm:space-y-4 w-full">
-                  <div className={`w-14 h-14 sm:w-16 sm:h-16 mx-auto rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-500 ${
+                <CardContent className={`p-5 sm:p-6 space-y-4 sm:space-y-4 w-full flex flex-col h-full ${cardTextDirection}`}>
+                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-500 ${cardIconAlignment} ${
                     activeFeature === index
                       ? 'bg-gradient-to-br from-teal-500 to-cyan-500 text-white shadow-lg'
                       : 'bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400'
@@ -390,19 +390,20 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
                       {feature.icon}
                     </div>
                   </div>
-                  <div>
+                  <div className="flex-1 w-full space-y-2">
                     <h3 className="text-lg sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
                       {feature.title}
                     </h3>
                     <p className="text-sm sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-2 sm:mb-3">
                       {feature.description}
                     </p>
-                    <div className="text-xs sm:text-xs md:text-sm text-teal-600 dark:text-teal-400 font-semibold hover:underline">
-                      اضغط للمزيد ←
-                    </div>
+                  </div>
+                  <div className={`text-xs sm:text-xs md:text-sm text-teal-600 dark:text-teal-400 font-semibold hover:underline ${cardLinkAlignment}`}>
+                    {t('landing.features.clickForMore')}
                   </div>
                 </CardContent>
               </Card>
+              </div>
             ))}
           </div>
         </div>
@@ -427,24 +428,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
             }}
           >
             <h2 className="text-2xl max-[360px]:text-[1.7rem] sm:text-2xl md:text-3xl lg:text-5xl font-bold mb-3 sm:mb-4 lg:mb-6">
-              جاهز للبدء؟
+              {t('landing.features.readyToStart')}
             </h2>
             <p className="text-sm max-[360px]:text-base sm:text-sm md:text-base lg:text-2xl mb-4 sm:mb-6 lg:mb-8 opacity-90 px-2 sm:px-0">
-              انضم إلى مئات المستشفيات التي تثق بمنصة صحتي
+              {t('landing.features.joinHundreds')}
             </p>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4 justify-center w-full px-2 sm:px-0">
               <Button
                 onClick={onNavigateToRegister}
                 className="px-5 py-3 max-[360px]:px-6 max-[360px]:py-3 sm:px-6 sm:py-3 lg:px-8 lg:py-4 text-sm max-[360px]:text-base sm:text-base lg:text-lg font-semibold bg-white text-teal-600 hover:bg-gray-100 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
               >
-                إنشاء حساب جديد
+                {t('landing.createAccount')}
               </Button>
               <Button
                 onClick={onNavigateToLogin}
                 variant="outline"
                 className="px-5 py-3 max-[360px]:px-6 max-[360px]:py-3 sm:px-6 sm:py-3 lg:px-8 lg:py-4 text-sm max-[360px]:text-base sm:text-base lg:text-lg font-semibold border-2 border-white text-white hover:bg-white hover:text-teal-600 transition-all duration-300 transform hover:scale-105"
               >
-                تسجيل الدخول
+                {t('landing.login')}
               </Button>
             </div>
           </div>
@@ -461,37 +462,37 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
                   <HospitalIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-base md:text-lg font-bold text-white">صحتي</h3>
-                  <p className="text-xs sm:text-xs text-gray-400">منصة طبية متكاملة</p>
+                  <h3 className="text-base sm:text-base md:text-lg font-bold text-white">{t('common.appName')}</h3>
+                  <p className="text-xs sm:text-xs text-gray-400">{t('common.appTagline')}</p>
                 </div>
               </div>
               <p className="text-sm sm:text-sm text-gray-400 leading-relaxed">
-                نحن ملتزمون بتقديم أفضل الحلول التقنية لقطاع الرعاية الصحية
+                {t('landing.footer.commitment')}
               </p>
             </div>
             
             <div className="space-y-2 sm:space-y-4">
-              <h4 className="text-base sm:text-base md:text-lg font-semibold text-white">روابط سريعة</h4>
+              <h4 className="text-base sm:text-base md:text-lg font-semibold text-white">{t('landing.footer.quickLinks')}</h4>
               <ul className="space-y-1 sm:space-y-2 text-sm sm:text-sm text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">الخدمات</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">الأسعار</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">الدعم</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">تواصل معنا</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t('landing.footer.services')}</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t('landing.footer.pricing')}</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t('landing.footer.support')}</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t('landing.footer.contactUs')}</a></li>
               </ul>
             </div>
             
             <div className="space-y-2 sm:space-y-4">
-              <h4 className="text-base sm:text-base md:text-lg font-semibold text-white">تواصل معنا</h4>
+              <h4 className="text-base sm:text-base md:text-lg font-semibold text-white">{t('landing.footer.contact')}</h4>
               <div className="space-y-1 sm:space-y-2 text-sm sm:text-sm text-gray-400">
-                <p>📧 info@sahtee.com</p>
-                <p>📞 +966 50 123 4567</p>
-                <p>📍 الرياض، المملكة العربية السعودية</p>
+                <p>{t('landing.footer.email')}</p>
+                <p>{t('landing.footer.phone')}</p>
+                <p>{t('landing.footer.address')}</p>
               </div>
             </div>
           </div>
           
           <div className="border-t border-gray-800 mt-4 sm:mt-6 lg:mt-8 pt-4 sm:pt-6 lg:pt-8 text-center text-sm sm:text-sm text-gray-400">
-            <p>&copy; 2024 منصة صحتي. جميع الحقوق محفوظة.</p>
+            <p dangerouslySetInnerHTML={{ __html: t('landing.footer.copyright') }}></p>
           </div>
         </div>
       </footer>
@@ -540,7 +541,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
                         {features[selectedFeature].title}
                       </h2>
                       <p className="text-white/90 text-sm sm:text-base lg:text-lg font-medium hidden sm:block">
-                        اكتشف المزيد عن هذه الميزة المذهلة
+                        {t('landing.features.discoverMore')}
                       </p>
                     </div>
                   </div>
@@ -646,10 +647,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
                 <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-600/50 rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-200/50 dark:border-gray-600/50">
                   <div className="text-center space-y-3 sm:space-y-4">
                     <h4 className="text-lg sm:text-lg font-bold text-gray-900 dark:text-white">
-                      جاهز لتجربة هذه الميزة؟
+                      {t('landing.features.readyToTry')}
                     </h4>
                     <p className="text-gray-600 dark:text-gray-400 text-base sm:text-base">
-                      انضم إلى مئات المستشفيات التي تثق بمنصة صحتي
+                      {t('landing.features.joinHundreds')}
                     </p>
                     <div className="flex flex-col gap-2 sm:gap-4 justify-center pt-2">
                       <Button
@@ -661,7 +662,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
                           boxShadow: '0 10px 30px rgba(13, 148, 136, 0.4)'
                         }}
                       >
-                        جرب المنصة الآن
+                        {t('landing.features.tryPlatform')}
                       </Button>
                       <Button
                         onClick={closeModal}

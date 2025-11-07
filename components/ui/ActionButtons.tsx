@@ -11,7 +11,6 @@ interface ActionButtonsProps {
 
 /**
  * Modern Icon Action Buttons Component
- * أزرار أيقونات عصرية ومتطورة
  */
 export const ActionButtons: React.FC<ActionButtonsProps> = ({
   onEdit,
@@ -35,12 +34,12 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 
   return (
     <div className="flex items-center gap-2 justify-center">
-      {/* Edit Button - أيقونة قلم بدائرة أزرق */}
+      {/* Edit Button - Blue circle with pen icon */}
       {showEdit && onEdit && (
         <button
           onClick={onEdit}
           disabled={disabled}
-          title="تعديل"
+          title="Edit"
           className={`
             ${buttonSizes[size]}
             relative group overflow-hidden
@@ -64,19 +63,19 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
           {/* Rotating glow */}
           <span className="absolute inset-0 rounded-full bg-gradient-to-r from-white/0 via-white/30 to-white/0 opacity-0 group-hover:opacity-100 group-hover:animate-spin"></span>
           
-          {/* Edit Icon - قلم */}
+          {/* Edit Icon - Pen */}
           <svg className={`${iconSizes[size]} relative z-10 group-hover:rotate-12 transition-transform duration-300`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
           </svg>
         </button>
       )}
 
-      {/* Delete Button - أيقونة سلة المهملات بدائرة حمراء */}
+      {/* Delete Button - Red circle with trash icon */}
       {showDelete && onDelete && (
         <button
           onClick={onDelete}
           disabled={disabled}
-          title="حذف"
+          title="Delete"
           className={`
             ${buttonSizes[size]}
             relative group overflow-hidden
@@ -100,7 +99,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
           {/* Shake animation on hover */}
           <span className="absolute inset-0 rounded-full bg-gradient-to-r from-white/0 via-white/30 to-white/0 opacity-0 group-hover:opacity-100 group-hover:animate-pulse"></span>
           
-          {/* Delete Icon - سلة مهملات */}
+          {/* Delete Icon - Trash */}
           <svg className={`${iconSizes[size]} relative z-10 group-hover:scale-110 transition-transform duration-300`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>

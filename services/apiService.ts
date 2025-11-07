@@ -2,6 +2,7 @@ import { HospitalService, WorkSchedule, Account, Hospital } from '../types';
 import { API_CONFIG, API_ENDPOINTS, TokenManager } from '../config/apiConfig';
 import { CSRFProtection } from '../utils/csrfProtection';
 import { RateLimiter } from '../utils/rateLimiter';
+import i18n from '../i18n';
 
 // Error types for better error handling
 export class ApiError extends Error {
@@ -51,11 +52,24 @@ async function fetchApi<T>(
     headers.set('Content-Type', 'application/json');
   }
 
+  const currentLang =
+    i18n?.language ||
+    localStorage.getItem('i18nextLng') ||
+    sessionStorage.getItem('i18nextLng') ||
+    'ar';
+
+  headers.set('Accept-Language', currentLang);
+
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.REQUEST_TIMEOUT);
 
-    const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, { 
+    const requestUrl = new URL(`${API_CONFIG.BASE_URL}${endpoint}`, API_CONFIG.BASE_URL);
+    if (method === 'GET') {
+      requestUrl.searchParams.set('lang', currentLang);
+    }
+
+    const response = await fetch(requestUrl.toString(), { 
       ...options, 
       headers,
       signal: controller.signal 

@@ -1,27 +1,21 @@
-import { API_CONFIG, API_ENDPOINTS, TokenManager, STORAGE_KEYS } from '../config/apiConfig';
+import { API_CONFIG, API_ENDPOINTS, TokenManager } from '../config/apiConfig';
 import { WorkSchedule } from '../types';
-
-// Server availability tracking
-let isServerAvailable = true;
-
-// Get hospital ID from storage
-const getHospitalId = (): number | null => {
-  const userDataStr = sessionStorage.getItem(STORAGE_KEYS.USER_DATA) || localStorage.getItem(STORAGE_KEYS.USER_DATA);
-  if (!userDataStr) return null;
-  
-  try {
-    const [, hospital] = JSON.parse(userDataStr);
-    return hospital?.id || null;
-  } catch {
-    return null;
-  }
-};
+import i18n from '../i18n';
 
 // Generic API fetch client with error handling
 async function apiFetch<T>(path: string, options: RequestInit = {}, fallback?: T): Promise<T> {
   const token = TokenManager.getToken();
   const headers = new Headers(options.headers || {});
   headers.set('Accept', 'application/json');
+  const method = (options.method || 'GET').toUpperCase();
+
+  const currentLang =
+    i18n?.language ||
+    localStorage.getItem('i18nextLng') ||
+    sessionStorage.getItem('i18nextLng') ||
+    'ar';
+
+  headers.set('Accept-Language', currentLang);
   
   // Allow FormData without Content-Type, otherwise JSON
   if (options.body instanceof FormData) {
@@ -38,14 +32,18 @@ async function apiFetch<T>(path: string, options: RequestInit = {}, fallback?: T
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.REQUEST_TIMEOUT);
     
-    const response = await fetch(`${API_CONFIG.BASE_URL}${path}`, { 
+    const requestUrl = new URL(`${API_CONFIG.BASE_URL}${path}`, API_CONFIG.BASE_URL);
+    if (method === 'GET') {
+      requestUrl.searchParams.set('lang', currentLang);
+    }
+
+    const response = await fetch(requestUrl.toString(), { 
       ...options, 
       headers,
       signal: controller.signal 
     });
     
     clearTimeout(timeoutId);
-    isServerAvailable = true;
     
     if (!response.ok) {
       const err = await response.json().catch(() => ({ message: `HTTP ${response.status}` }));
@@ -59,8 +57,6 @@ async function apiFetch<T>(path: string, options: RequestInit = {}, fallback?: T
     
     return (await response.json()) as T;
   } catch (e) {
-    isServerAvailable = false;
-    
     // If fallback is provided, use it instead of throwing
     if (fallback !== undefined) {
       // API call failed, using fallback
@@ -69,22 +65,6 @@ async function apiFetch<T>(path: string, options: RequestInit = {}, fallback?: T
     
     throw e;
   }
-}
-
-export const getServerStatus = () => isServerAvailable;
-
-export interface StatsData {
-  totalReservations: number;
-  pendingReservations: number;
-  completedReservations: number;
-  cancelledReservations: number;
-  confirmedReservations: number;
-  totalServices: number;
-  todayReservations: number;
-  monthlyRevenue: number;
-  weeklyReservations: number;
-  totalWorkDays: number;
-  averageServicePrice: number;
 }
 
 export interface DashboardStats {
@@ -134,21 +114,6 @@ export interface Service {
   created_at: string;
   updated_at: string;
 }
-
-// Default empty stats
-const DEFAULT_STATS: StatsData = {
-  totalReservations: 0,
-  pendingReservations: 0,
-  completedReservations: 0,
-  cancelledReservations: 0,
-  confirmedReservations: 0,
-  totalServices: 0,
-  todayReservations: 0,
-  monthlyRevenue: 0,
-  weeklyReservations: 0,
-  totalWorkDays: 0,
-  averageServicePrice: 0
-};
 
 const DEFAULT_DASHBOARD_STATS: DashboardStats = {
   workDays: {
@@ -205,13 +170,6 @@ export const cancelReservation = async (id: number): Promise<void> => {
   await updateReservationStatus(id, 'cancelled');
 };
 
-// Fetch reservations by date range with fallback
-export const getReservationsByDate = async (from: string, to: string): Promise<Reservation[]> => {
-  // Hospital API doesn't support date filtering, so we get all and filter
-  const allReservations = await getAllReservations();
-  return allReservations.filter(r => r.start_date >= from && r.start_date <= to);
-};
-
 // Fetch all services with fallback (using hospital services endpoint)
 export const getAllServices = async (): Promise<Service[]> => {
   const services = await apiFetch<Service[]>(
@@ -230,89 +188,6 @@ export const getAllWorkSchedules = async (): Promise<WorkSchedule[]> => {
     []
   );
   return schedules || [];
-};
-
-// Calculate statistics from reservations and services
-export const calculateStats = async (): Promise<StatsData> => {
-  try {
-    // Fetch all data with fallbacks
-    const [allReservations, services] = await Promise.all([
-      getAllReservations(),
-      getAllServices()
-    ]);
-
-    // Calculate dates
-    const today = new Date().toISOString().split('T')[0];
-    const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-    const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0];
-    
-    // Calculate start of week
-    const startOfWeek = new Date();
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-    const startOfWeekStr = startOfWeek.toISOString().split('T')[0];
-
-    // Filter reservations
-    const todayReservations = allReservations.filter(r => r.start_date === today);
-    const monthlyReservations = allReservations.filter(r => r.start_date >= startOfMonth && r.start_date <= endOfMonth);
-    const weeklyReservations = allReservations.filter(r => r.start_date >= startOfWeekStr);
-    
-    const pendingReservations = allReservations.filter(r => r.status === 'pending');
-    const confirmedReservations = allReservations.filter(r => r.status === 'confirmed');
-    const completedReservations = allReservations.filter(r => r.status === 'completed');
-    const cancelledReservations = allReservations.filter(r => r.status === 'cancelled');
-
-    // Calculate monthly revenue
-    const monthlyRevenue = monthlyReservations.reduce((total, reservation) => {
-      return total + (reservation.price || 0);
-    }, 0);
-
-    // Calculate average service price
-    const averageServicePrice = services.length > 0 
-      ? services.reduce((sum, s) => sum + (parseFloat(s.price) || 0), 0) / services.length 
-      : 0;
-
-    return {
-      totalReservations: allReservations.length,
-      pendingReservations: pendingReservations.length,
-      completedReservations: completedReservations.length,
-      confirmedReservations: confirmedReservations.length,
-      cancelledReservations: cancelledReservations.length,
-      totalServices: services.length,
-      todayReservations: todayReservations.length,
-      monthlyRevenue: monthlyRevenue,
-      weeklyReservations: weeklyReservations.length,
-      totalWorkDays: 0,
-      averageServicePrice: averageServicePrice
-    };
-  } catch (error) {
-    return DEFAULT_STATS;
-  }
-};
-
-// Get quick stats (faster, less data)
-export const getQuickStats = async (): Promise<Partial<StatsData>> => {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    
-    // Fetch in parallel with fallbacks
-    const [pendingReservations, todayReservations, services] = await Promise.all([
-      getReservationsByStatus('pending'),
-      getReservationsByDate(today, today),
-      getAllServices()
-    ]);
-
-    return {
-      pendingReservations: pendingReservations.length,
-      todayReservations: todayReservations.length,
-      totalServices: services.length
-    };
-  } catch (error) {
-    return {
-      pendingReservations: 0,
-      todayReservations: 0,
-      totalServices: 0
-    };
-  }
 };
 
 // Update reservation status (using PATCH with query parameter as per Postman)
@@ -400,45 +275,5 @@ export const getDashboardStats = async (): Promise<DashboardStats> => {
     };
   } catch (error) {
     return DEFAULT_DASHBOARD_STATS;
-  }
-};
-
-// Get stats by period
-export const getStatsByPeriod = async (startDate: string, endDate: string): Promise<StatsData> => {
-  try {
-    const [reservations, services] = await Promise.all([
-      getReservationsByDate(startDate, endDate),
-      getAllServices()
-    ]);
-
-    const pendingReservations = reservations.filter(r => r.status === 'pending');
-    const confirmedReservations = reservations.filter(r => r.status === 'confirmed');
-    const completedReservations = reservations.filter(r => r.status === 'completed');
-    const cancelledReservations = reservations.filter(r => r.status === 'cancelled');
-
-    const revenue = reservations.reduce((total, reservation) => {
-      return total + (reservation.price || 0);
-    }, 0);
-
-    // Calculate average service price
-    const averageServicePrice = services.length > 0 
-      ? services.reduce((sum, s) => sum + (parseFloat(s.price) || 0), 0) / services.length 
-      : 0;
-
-    return {
-      totalReservations: reservations.length,
-      pendingReservations: pendingReservations.length,
-      completedReservations: completedReservations.length,
-      confirmedReservations: confirmedReservations.length,
-      cancelledReservations: cancelledReservations.length,
-      totalServices: services.length,
-      todayReservations: 0, // Not applicable for custom period
-      monthlyRevenue: revenue,
-      weeklyReservations: 0, // Not applicable for custom period
-      totalWorkDays: 0,
-      averageServicePrice: averageServicePrice
-    };
-  } catch (error) {
-    return DEFAULT_STATS;
   }
 };
