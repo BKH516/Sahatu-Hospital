@@ -21,12 +21,12 @@ const LanguageToggle: React.FC = () => {
   return (
     <button
       onClick={toggleLanguage}
-      className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 flex-shrink-0"
+      className="flex items-center justify-center gap-0 sm:gap-2 w-9 h-9 sm:w-auto sm:h-auto p-2 sm:px-3 sm:py-2 rounded-full sm:rounded-lg transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 flex-shrink-0"
       aria-label={`${t('language.switchTo')} ${otherLang === 'ar' ? t('language.arabic') : t('language.english')}`}
       title={`${t('language.switchTo')} ${otherLang === 'ar' ? t('language.arabic') : t('language.english')}`}
     >
       <Languages className="w-5 h-5" />
-      <span className="text-sm font-medium">
+      <span className="hidden sm:inline text-sm font-medium">
         {currentLang === 'ar' ? t('language.arabicShort') : t('language.englishShort')}
       </span>
     </button>

@@ -570,7 +570,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-lg sm:text-xl font-bold text-teal-900 dark:text-teal-100 mb-2 sm:mb-3">
-                        نظرة عامة
+                        {t('landing.features.overview')}
                       </h3>
                       <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-2 sm:mb-4 text-sm sm:text-base">
                         {features[selectedFeature].description}
@@ -591,24 +591,26 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
-                      <h4 className="font-bold text-blue-900 dark:text-blue-100 text-lg sm:text-lg">المزايا الرئيسية</h4>
+                      <h4 className="font-bold text-blue-900 dark:text-blue-100 text-lg sm:text-lg">
+                        {t('landing.features.mainFeatures')}
+                      </h4>
                     </div>
                     <ul className="space-y-2">
                       <li className="flex items-center gap-2 text-blue-800 dark:text-blue-200 text-base sm:text-base">
                         <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></div>
-                        <span>حلول متطورة ومبتكرة</span>
+                        <span>{t('landing.features.advancedSolutions')}</span>
                       </li>
                       <li className="flex items-center gap-2 text-blue-800 dark:text-blue-200 text-base sm:text-base">
                         <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></div>
-                        <span>دعم فني على مدار الساعة</span>
+                        <span>{t('landing.features.support247')}</span>
                       </li>
                       <li className="flex items-center gap-2 text-blue-800 dark:text-blue-200 text-base sm:text-base">
                         <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></div>
-                        <span>سهولة في الاستخدام</span>
+                        <span>{t('landing.features.easyToUse')}</span>
                       </li>
                       <li className="flex items-center gap-2 text-blue-800 dark:text-blue-200 text-base sm:text-base">
                         <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></div>
-                        <span>تكامل مع الأنظمة الموجودة</span>
+                        <span>{t('landing.features.systemIntegration')}</span>
                       </li>
                     </ul>
                   </div>
@@ -620,24 +622,26 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
                       </div>
-                      <h4 className="font-bold text-green-900 dark:text-green-100 text-lg sm:text-lg">النتائج المتوقعة</h4>
+                      <h4 className="font-bold text-green-900 dark:text-green-100 text-lg sm:text-lg">
+                        {t('landing.features.expectedResults')}
+                      </h4>
                     </div>
                     <ul className="space-y-2">
                       <li className="flex items-center gap-2 text-green-800 dark:text-green-200 text-base sm:text-base">
                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full flex-shrink-0"></div>
-                        <span>تحسين الكفاءة بنسبة 40%</span>
+                        <span>{t('landing.features.efficiency40')}</span>
                       </li>
                       <li className="flex items-center gap-2 text-green-800 dark:text-green-200 text-base sm:text-base">
                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full flex-shrink-0"></div>
-                        <span>تقليل الأخطاء بنسبة 60%</span>
+                        <span>{t('landing.features.errors60')}</span>
                       </li>
                       <li className="flex items-center gap-2 text-green-800 dark:text-green-200 text-base sm:text-base">
                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full flex-shrink-0"></div>
-                        <span>توفير الوقت والجهد</span>
+                        <span>{t('landing.features.timeSaving')}</span>
                       </li>
                       <li className="flex items-center gap-2 text-green-800 dark:text-green-200 text-base sm:text-base">
                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full flex-shrink-0"></div>
-                        <span>رضا العملاء والمرضى</span>
+                        <span>{t('landing.features.customerSatisfaction')}</span>
                       </li>
                     </ul>
                   </div>
@@ -669,7 +673,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigate
                         variant="outline"
                         className="w-full px-5 sm:px-8 py-3 sm:py-3 text-sm sm:text-lg font-semibold border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300"
                       >
-                        إغلاق
+                        {t('common.close')}
                       </Button>
                     </div>
                   </div>
