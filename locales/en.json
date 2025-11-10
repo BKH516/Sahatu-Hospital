@@ -324,6 +324,8 @@
     "title": "Reset Password",
     "emailStepDescription": "Enter your email to send reset code",
     "resetStepDescription": "Enter the code and new password",
+    "stepRequest": "Step 1 of 2: Send your email address",
+    "stepReset": "Step 2 of 2: Enter the verification code and new password",
     "email": "Email",
     "verificationCode": "Verification Code",
     "newPassword": "New Password",
@@ -334,6 +336,9 @@
     "codeSent": "Reset code has been sent to your email",
     "resetError": "An error occurred while resetting password",
     "codeError": "An error occurred while sending reset code",
+    "supportNote": "If you need extra assistance, our support team can help within minutes.",
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "Enter a strong password",
     "timeline": {
       "identity": {
         "title": "Verify Identity",

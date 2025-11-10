@@ -134,16 +134,16 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({
                         }}
                         className={`w-full flex items-center justify-between rounded-xl px-4 py-3 transition-all duration-200 shadow-sm ${
                           current
-                            ? `bg-gradient-to-${isRTL ? 'l' : 'r'} ${item.activeColor} text-white shadow-lg shadow-${isRTL ? 'teal' : 'blue'}-500/30`
-                            : 'bg-white/70 dark:bg-gray-800/70 border border-gray-200/60 dark:border-gray-700/60 text-slate-700 dark:text-gray-200 hover:border-teal-400/60 hover:bg-white hover:text-teal-600 dark:hover:text-teal-300 dark:hover:bg-gray-800'
+                            ? `bg-teal-600 text-white shadow-lg shadow-teal-500/30`
+                            : 'bg-white dark:bg-gray-800/70 border border-gray-200/70 dark:border-gray-700/60 text-slate-700 dark:text-gray-200 hover:border-teal-400/70 hover:bg-teal-50/60 hover:text-teal-700 dark:hover:text-teal-300 dark:hover:bg-gray-800'
                         } ${isRTL ? 'flex-row-reverse text-right gap-3' : 'flex-row text-left gap-3'}`}
                       >
                         <span className="flex items-center gap-3">
                           <span
                             className={`p-2 rounded-lg ${
                               current
-                                ? 'bg-white/20'
-                                : 'bg-teal-100/70 dark:bg-teal-900/30 text-teal-600 dark:text-teal-300'
+                                ? 'bg-white/25'
+                                : 'bg-slate-100 text-slate-500 dark:bg-teal-900/30 dark:text-teal-300'
                             }`}
                           >
                             <IconComponent className={`w-5 h-5 ${current ? 'text-white' : ''}`} />
@@ -151,7 +151,7 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({
                           <span className="font-medium text-sm">{item.label}</span>
                         </span>
                         {!current && (
-                          <BriefcaseIcon className={`w-4 h-4 text-gray-300 dark:text-gray-600 ${isRTL ? 'rotate-180' : ''}`} />
+                          <BriefcaseIcon className={`w-4 h-4 text-slate-300 dark:text-gray-600 ${isRTL ? 'rotate-180' : ''}`} />
                         )}
                       </button>
                     </li>

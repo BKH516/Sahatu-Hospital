@@ -85,11 +85,11 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
       <div className="relative z-10 w-full max-w-md lg:max-w-5xl xl:max-w-6xl px-4 sm:px-6 lg:px-8 mx-auto">
         <div className={`sticky top-4 flex w-full pb-6 ${isRTL ? 'justify-start' : 'justify-end'}`}>
           <div className={`flex items-center gap-2 sm:gap-3 rounded-full border border-gray-200 bg-white/95 px-2 py-2 shadow-lg backdrop-blur dark:border-gray-700 dark:bg-gray-900/80 ${isRTL ? 'flex-row-reverse' : ''}`}>
-            <button
-              onClick={onBack}
+        <button
+          onClick={onBack}
               className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-teal-50 text-teal-600 transition-all duration-200 hover:bg-teal-100 dark:bg-teal-900/40 dark:text-teal-300 dark:hover:bg-teal-900/60"
-              title={t('common.back')}
-            >
+          title={t('common.back')}
+        >
               <svg
                 className={`h-4 w-4 ${isRTL ? 'rotate-180' : ''}`}
                 fill="none"
@@ -97,12 +97,12 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
                 viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0 7-7m-7 7h18" />
-              </svg>
-            </button>
-            <LanguageToggle />
-            <ThemeToggle />
+          </svg>
+        </button>
+        <LanguageToggle />
+        <ThemeToggle />
           </div>
-        </div>
+      </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 xl:gap-10 items-center justify-center w-full">
           

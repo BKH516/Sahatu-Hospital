@@ -74,18 +74,18 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBack }) => {
     }
   };
 
-  const stepText =
-    step === 'email'
-      ? t('forgotPassword.stepRequest', 'الخطوة 1 من 2: أرسل بريدك الإلكتروني')
-      : t('forgotPassword.stepReset', 'الخطوة 2 من 2: أدخل الرمز وكلمة المرور الجديدة');
+  const stepText = step === 'email' ? t('forgotPassword.stepRequest') : t('forgotPassword.stepReset');
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-sky-50 via-teal-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 flex items-center justify-center px-4 py-10">
-      <Card className="w-full max-w-lg shadow-xl border border-teal-100/60 dark:border-teal-900/40 bg-white/90 dark:bg-gray-900/80 backdrop-blur">
-        <CardHeader className={`space-y-4 ${isRTL ? 'text-right' : 'text-left'}`}>
-          <div className={`flex items-center justify-between gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+      <Card
+        className="w-full max-w-lg shadow-xl border border-teal-100/60 dark:border-teal-900/40 bg-white/90 dark:bg-gray-900/80 backdrop-blur"
+        dir={isRTL ? 'rtl' : 'ltr'}
+      >
+        <CardHeader className="space-y-4">
+          <div className="flex items-center justify-between gap-2">
             <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-white">
-              {t('forgotPassword.title', 'استعادة كلمة المرور')}
+              {t('forgotPassword.title')}
             </CardTitle>
             <button
               type="button"
@@ -113,7 +113,11 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBack }) => {
 
         <CardContent className="space-y-4">
               {success && (
-            <div className="flex items-start gap-3 rounded-lg border border-emerald-100 bg-emerald-50 px-4 py-3 text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-300">
+            <div
+              className={`flex items-start gap-3 rounded-lg border border-emerald-100 bg-emerald-50 px-4 py-3 text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-300 ${
+                isRTL ? 'flex-row-reverse text-right' : ''
+              }`}
+            >
               <svg className="h-5 w-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
@@ -126,7 +130,11 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBack }) => {
               )}
 
               {error && (
-            <div className="flex items-start gap-3 rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300">
+            <div
+              className={`flex items-start gap-3 rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300 ${
+                isRTL ? 'flex-row-reverse text-right' : ''
+              }`}
+            >
               <svg className="h-5 w-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
@@ -146,7 +154,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBack }) => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        placeholder="info@hospital.com"
+                placeholder={t('forgotPassword.emailPlaceholder')}
                       />
 
                   <Button
@@ -191,8 +199,8 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBack }) => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        placeholder="••••••••"
-                    className="pr-12"
+                    placeholder={t('forgotPassword.passwordPlaceholder')}
+                    className={`pr-12 ${isRTL ? 'text-right' : ''}`}
                       />
                       <button
                         type="button"
@@ -252,10 +260,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBack }) => {
               )}
 
           <p className={`text-xs text-gray-500 dark:text-gray-400 ${isRTL ? 'text-right' : 'text-left'}`}>
-            {t(
-              'forgotPassword.supportNote',
-              'إذا احتجت مساعدة إضافية يمكن لفريق الدعم مساعدتك خلال دقائق.'
-            )}
+            {t('forgotPassword.supportNote')}
           </p>
             </CardContent>
           </Card>
