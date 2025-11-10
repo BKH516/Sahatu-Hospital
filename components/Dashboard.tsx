@@ -14,6 +14,7 @@ import { Input } from './ui/Input';
 import { showToast } from '../utils';
 import ConfirmDialog from './ui/ConfirmDialog';
 import ActionButtons from './ui/ActionButtons';
+import EnhancedTable, { EnhancedTableColumn } from './ui/EnhancedTable';
 
 type View = 'overview' | 'profile' | 'services' | 'schedule' | 'reservations' | 'history';
 
@@ -215,147 +216,141 @@ const ServicesView: React.FC = () => {
         }
     };
 
+    const serviceColumns: EnhancedTableColumn<HospitalService>[] = [
+        {
+            id: 'service',
+            header: t('dashboard.services.serviceName'),
+            minWidth: '16rem',
+            align: isRTL ? 'right' : 'left',
+            render: (service) => (
+                <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
+                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center">
+                        <BriefcaseIcon className="w-5 h-5 text-blue-600 dark:text-blue-300" />
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                            {service.service_name}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                            ID: {service.id}
+                        </p>
+                    </div>
+                </div>
+            )
+        },
+        {
+            id: 'price',
+            header: t('dashboard.services.price'),
+            align: 'center',
+            minWidth: '10rem',
+            render: (service) => (
+                <span className="text-base font-semibold text-blue-600 dark:text-blue-300">
+                    {service.price} {t('dashboard.services.currency')}
+                </span>
+            )
+        },
+        {
+            id: 'capacity',
+            header: t('dashboard.services.capacity'),
+            align: 'center',
+            minWidth: '8rem',
+            render: (service) => (
+                <span className="inline-flex items-center justify-center gap-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 px-3 py-1 text-sm font-medium">
+                    {service.capacity}
+                </span>
+            )
+        },
+        {
+            id: 'actions',
+            header: t('common.actions'),
+            align: 'center',
+            minWidth: '12rem',
+            className: 'whitespace-nowrap',
+            render: (service) => (
+                <div className={`flex justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <ActionButtons
+                        onEdit={() => { setEditingService(service); setIsModalOpen(true); }}
+                        onDelete={() => handleDeleteClick(service.id)}
+                        size="sm"
+                    />
+                </div>
+            )
+        }
+    ];
+
     return (
         <div className="space-y-6 w-full max-w-6xl mx-auto px-2 sm:px-0">
-            <Card className="w-full">
-                <CardHeader>
-                    <div className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between ${isRTL ? 'sm:flex-row-reverse text-right' : ''}`}>
-                        <div className="space-y-1">
-                            <CardTitle className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse justify-end' : ''}`}>
-                                <BriefcaseIcon className="w-5 h-5 text-blue-600" />
-                                {t('dashboard.services.title')}
-                            </CardTitle>
-                            <CardDescription className={isRTL ? 'text-right' : ''}>
-                                {t('dashboard.services.description')}
-                            </CardDescription>
-                        </div>
+            <Card className="w-full" dir={isRTL ? 'rtl' : 'ltr'}>
+                <CardHeader className="border-b border-slate-200/80 dark:border-slate-700/60 pb-6">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
                         <Button 
                             onClick={() => { setEditingService(null); setIsModalOpen(true); }} 
                             section="services"
-                            className="text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10"
+                            className={`w-full sm:w-auto text-xs sm:text-sm px-4 h-10 rounded-full inline-flex items-center gap-2 shadow-sm self-start lg:order-2 lg:ml-auto ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}
                         >
-                            <PlusCircleIcon className={`w-3 h-3 sm:w-4 sm:h-4 ${i18n.language === 'ar' ? 'mr-1 sm:mr-2' : 'ml-1 sm:ml-2'}`} />
+                            <PlusCircleIcon className="w-3 h-3 sm:w-4 sm:h-4" />
                             <span className="hidden xs:inline">{t('dashboard.services.addService')}</span>
                             <span className="xs:hidden">{t('dashboard.services.add')}</span>
                         </Button>
+                        <div className="flex-1 space-y-1.5 lg:min-w-0 lg:order-1 text-left">
+                            <CardTitle className="flex items-center gap-2 text-xl font-semibold text-slate-900 dark:text-slate-100 justify-start">
+                                <BriefcaseIcon className="w-5 h-5 text-blue-600" />
+                                {t('dashboard.services.title')}
+                            </CardTitle>
+                            <CardDescription className="text-sm text-slate-500 dark:text-slate-400 text-left">
+                                {t('dashboard.services.description')}
+                            </CardDescription>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    {loading ? (
-                        <div className="flex items-center justify-center p-8">
-                            <div className="text-center">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
-                                <p className="text-gray-600 dark:text-gray-400">{t('common.loading')}</p>
-                            </div>
-                        </div>
-                    ) : (
-                        <>
-                            {/* Mobile View - Cards */}
-                            <div className="block md:hidden space-y-4 w-full">
-                                {services.map(service => (
-                                    <Card
-                                        key={service.id}
-                                        className="w-full border border-blue-200 dark:border-blue-500/40 rounded-xl shadow-sm bg-white/80 dark:bg-gray-800/70 backdrop-blur"
-                                    >
-                                        <CardContent className="p-4 space-y-4 text-center">
-                                            <div className="flex justify-center">
-                                                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shadow-inner">
-                                                    <BriefcaseIcon className="w-6 h-6 text-blue-600 dark:text-blue-300" />
-                                                </div>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                                                    {service.service_name}
-                                                </h3>
-                                            </div>
-                                            <div className="flex flex-wrap justify-center gap-3">
-                                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-200 shadow-sm">
-                                                    <span>💰</span>
-                                                    {service.price} {t('dashboard.services.currency')}
-                                                </span>
-                                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-200 shadow-sm">
-                                                    <span>👥</span>
-                                                    {service.capacity} {t('dashboard.services.capacity')}
-                                                </span>
-                                            </div>
-                                            <div className={`flex justify-center gap-3 pt-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                                                <ActionButtons
-                                                    onEdit={() => { setEditingService(service); setIsModalOpen(true); }}
-                                                    onDelete={() => handleDeleteClick(service.id)}
-                                                    size="sm"
-                                                />
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                ))}
-                                {services.length === 0 && (
-                                    <div className="text-center p-8">
-                                        <BriefcaseIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                                        <p className="text-gray-500 dark:text-gray-400">{t('dashboard.services.noServices')}</p>
+                    <EnhancedTable<HospitalService>
+                        data={services}
+                        columns={serviceColumns}
+                        getRowId={(service) => service.id}
+                        isRTL={isRTL}
+                        tone="blue"
+                        primaryColumnId="service"
+                        loading={loading}
+                        loadingLabel={t('common.loading')}
+                        emptyState={{
+                            icon: <BriefcaseIcon className="w-10 h-10 text-blue-400" />,
+                            title: t('dashboard.services.noServices'),
+                            description: t('dashboard.services.description')
+                        }}
+                        renderMobileCard={(service) => (
+                            <div className="p-5 space-y-4">
+                                <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
+                                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center shadow-inner">
+                                        <BriefcaseIcon className="w-6 h-6 text-blue-600 dark:text-blue-300" />
                                     </div>
-                                )}
-                            </div>
-
-                            {/* Desktop View - Table */}
-                            <div className="hidden md:block">
-                                <div className="w-full max-w-5xl mx-auto overflow-x-auto rounded-2xl border border-blue-100 dark:border-blue-900/40 bg-white/90 dark:bg-gray-900/60 shadow-sm shadow-blue-100/50 px-2">
-                                    <table className="w-full text-sm text-gray-700 dark:text-gray-200 md:min-w-[48rem] lg:min-w-[52rem]">
-                                        <thead className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 text-blue-900 dark:text-blue-100 uppercase tracking-wide text-xs">
-                                            <tr>
-                                                <th className={`px-4 py-3 font-semibold border-b border-blue-100/70 dark:border-blue-900/40 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                    {t('dashboard.services.serviceName')}
-                                                </th>
-                                                <th className={`px-4 py-3 font-semibold border-b border-blue-100/70 dark:border-blue-900/40 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                    {t('dashboard.services.price')}
-                                                </th>
-                                                <th className={`px-4 py-3 font-semibold border-b border-blue-100/70 dark:border-blue-900/40 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                    {t('dashboard.services.capacity')}
-                                                </th>
-                                                <th className="px-4 py-3 font-semibold border-b border-blue-100/70 dark:border-blue-900/40 text-center">
-                                                    {t('common.actions')}
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {services.map(service => (
-                                                <tr
-                                                    key={service.id}
-                                                    className="odd:bg-white even:bg-blue-50/40 dark:odd:bg-gray-900/60 dark:even:bg-gray-900/40 hover:bg-blue-100/40 dark:hover:bg-blue-900/30 transition-colors"
-                                                >
-                                                    <td className={`px-4 py-4 font-medium text-gray-900 dark:text-gray-100 ${isRTL ? 'text-right' : 'text-left'}`}>
-                                                        {service.service_name}
-                                                    </td>
-                                                    <td className={`px-4 py-4 font-semibold text-blue-600 dark:text-blue-300 ${isRTL ? 'text-right' : 'text-left'}`}>
-                                                        {service.price}
-                                                    </td>
-                                                    <td className={`px-4 py-4 text-gray-700 dark:text-gray-300 ${isRTL ? 'text-right' : 'text-left'}`}>
-                                                        {service.capacity}
-                                                    </td>
-                                                    <td className="px-4 py-4">
-                                                        <div className={`flex justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
-                                                            <ActionButtons
-                                                                onEdit={() => { setEditingService(service); setIsModalOpen(true); }}
-                                                                onDelete={() => handleDeleteClick(service.id)}
-                                                                size="sm"
-                                                            />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                            {services.length === 0 && (
-                                                <tr>
-                                                    <td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                                                        <BriefcaseIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                                                        <p>{t('dashboard.services.noServices')}</p>
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </tbody>
-                                    </table>
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                            {service.service_name}
+                                        </p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            {t('dashboard.services.capacity')}: <span className="font-medium text-gray-700 dark:text-gray-300">{service.capacity}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className={`flex items-center justify-between rounded-2xl border border-blue-100/70 dark:border-blue-500/30 bg-blue-50/60 dark:bg-blue-900/20 px-4 py-2 ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
+                                    <span className="text-xs font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-300">
+                                        {t('dashboard.services.price')}
+                                    </span>
+                                    <span className="text-sm font-semibold text-blue-700 dark:text-blue-200">
+                                        {service.price} {t('dashboard.services.currency')}
+                                    </span>
+                                </div>
+                                <div className={`flex justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+                                    <ActionButtons
+                                        onEdit={() => { setEditingService(service); setIsModalOpen(true); }}
+                                        onDelete={() => handleDeleteClick(service.id)}
+                                        size="sm"
+                                    />
                                 </div>
                             </div>
-                        </>
-                    )}
+                        )}
+                    />
                 </CardContent>
             </Card>
 
@@ -509,6 +504,45 @@ const ScheduleView: React.FC = () => {
         }
     };
 
+    const scheduleColumns: EnhancedTableColumn<WorkSchedule>[] = [
+        {
+            id: 'day',
+            header: t('dashboard.schedule.workDay'),
+            minWidth: '18rem',
+            align: isRTL ? 'right' : 'left',
+            render: (schedule) => (
+                <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 flex items-center justify-center">
+                        <CalendarIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-300" />
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                            {getDayName(schedule.day_of_week)}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {schedule.day_of_week}
+                        </p>
+                    </div>
+                </div>
+            )
+        },
+        {
+            id: 'actions',
+            header: t('common.actions'),
+            align: 'center',
+            minWidth: '10rem',
+            render: (schedule) => (
+                <div className={`flex justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <ActionButtons
+                        onDelete={() => handleDeleteDayClick(schedule.id)}
+                        showEdit={false}
+                        size="sm"
+                    />
+                </div>
+            )
+        }
+    ];
+
     return (
         <div className="space-y-6 w-full max-w-5xl mx-auto px-2 sm:px-0">
             {error && (
@@ -532,15 +566,15 @@ const ScheduleView: React.FC = () => {
                 </div>
             )}
             
-            <Card className="w-full">
-                <CardHeader>
-                    <div className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between ${isRTL ? 'sm:flex-row-reverse text-right' : ''}`}>
-                        <div className="space-y-1">
-                            <CardTitle className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse justify-end' : ''}`}>
-                                <CalendarIcon className="w-5 h-5 text-green-600" />
+            <Card className="w-full" dir={isRTL ? 'rtl' : 'ltr'}>
+                <CardHeader className="border-b border-slate-200/80 dark:border-slate-700/60 pb-6">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+                        <div className="flex-1 space-y-1.5 lg:min-w-0 text-left">
+                            <CardTitle className="flex items-center gap-2 text-xl font-semibold text-slate-900 dark:text-slate-100 justify-start">
+                                <ClockIcon className="w-5 h-5 text-green-600" />
                                 {t('dashboard.schedule.title')}
                             </CardTitle>
-                            <CardDescription className={isRTL ? 'text-right' : ''}>
+                            <CardDescription className="text-sm text-slate-500 dark:text-slate-400 text-left">
                                 {t('dashboard.schedule.description')}
                             </CardDescription>
                         </div>
@@ -549,7 +583,7 @@ const ScheduleView: React.FC = () => {
                             disabled={loading}
                             variant="outline"
                             size="sm"
-                            className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
+                            className={`w-full sm:w-auto flex items-center gap-2 rounded-full px-4 h-10 self-start lg:ml-auto ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}
                         >
                             {loading ? (
                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
@@ -594,115 +628,58 @@ const ScheduleView: React.FC = () => {
                 </CardContent>
             </Card>
 
-            <Card className="w-full">
-                <CardHeader>
-                    <CardTitle className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse justify-end' : ''}`}>
-                        <ClockIcon className="w-5 h-5 text-green-600" />
-                        {t('dashboard.schedule.currentDays')}
-                    </CardTitle>
-                    <CardDescription className={isRTL ? 'text-right' : ''}>
-                        {t('dashboard.schedule.currentDaysDesc')}
-                    </CardDescription>
+            <Card className="w-full" dir={isRTL ? 'rtl' : 'ltr'}>
+                <CardHeader className="border-b border-slate-200/80 dark:border-slate-700/60 pb-6">
+                    <div className={`space-y-1.5 ${isRTL ? 'text-right' : 'text-left'}`}>
+                        <CardTitle className={`flex items-center gap-2 text-xl font-semibold text-slate-900 dark:text-slate-100 ${isRTL ? 'flex-row-reverse justify-end text-right' : 'justify-start text-left'}`}>
+                            <CalendarIcon className="w-5 h-5 text-green-600" />
+                            {t('dashboard.schedule.currentDays')}
+                        </CardTitle>
+                        <CardDescription className="text-sm text-slate-500 dark:text-slate-400">
+                            {t('dashboard.schedule.currentDaysDesc')}
+                        </CardDescription>
+                    </div>
                 </CardHeader>
                 <CardContent>
-                    {loading ? (
-                        <div className="flex items-center justify-center p-8">
-                            <div className="text-center">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 dark:border-green-400 mx-auto mb-4"></div>
-                                <p className="text-gray-600 dark:text-gray-400">{t('common.loading')}</p>
-                            </div>
-                        </div>
-                    ) : (
-                        <>
-                            {/* Mobile View - Cards */}
-                            <div className="block md:hidden space-y-4 w-full">
-                                {schedules.map(schedule => (
-                                    <Card
-                                        key={schedule.id}
-                                        className="w-full border border-green-200 dark:border-green-500/40 rounded-xl shadow-sm bg-white/80 dark:bg-gray-800/70 backdrop-blur"
-                                    >
-                                        <CardContent className="p-4 space-y-4 text-center">
-                                            <div className="flex justify-center">
-                                                <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shadow-inner">
-                                                    <CalendarIcon className="w-6 h-6 text-green-600 dark:text-green-300" />
-                                                </div>
-                                            </div>
-                                            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                                                {getDayName(schedule.day_of_week)}
-                                            </h3>
-                                            <div className={`flex justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
-                                                <ActionButtons
-                                                    onDelete={() => handleDeleteDayClick(schedule.id)}
-                                                    showEdit={false}
-                                                    size="sm"
-                                                />
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                ))}
-                                {schedules.length === 0 && (
-                                    <div className="text-center p-8">
-                                        <CalendarIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                                        <p className="text-gray-500 dark:text-gray-400">{t('dashboard.schedule.noDays')}</p>
+                    <EnhancedTable<WorkSchedule>
+                        data={schedules}
+                        columns={scheduleColumns}
+                        getRowId={(schedule) => schedule.id}
+                        isRTL={isRTL}
+                        tone="green"
+                        primaryColumnId="day"
+                        loading={loading}
+                        loadingLabel={t('common.loading')}
+                        emptyState={{
+                            icon: <CalendarIcon className="w-10 h-10 text-emerald-400" />,
+                            title: t('dashboard.schedule.noDays'),
+                            description: t('dashboard.schedule.description')
+                        }}
+                        renderMobileCard={(schedule) => (
+                            <div className="p-5 space-y-4">
+                                <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
+                                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 flex items-center justify-center">
+                                        <CalendarIcon className="w-6 h-6 text-emerald-600 dark:text-emerald-300" />
                                     </div>
-                                )}
-                            </div>
-
-                            {/* Desktop View - Table */}
-                            <div className="hidden md:block">
-                                <div className="w-full max-w-4xl mx-auto overflow-x-auto rounded-2xl border border-green-100 dark:border-green-900/40 bg-white/90 dark:bg-gray-900/60 shadow-sm shadow-green-100/50">
-                                    <table className="min-w-[36rem] w-full text-sm text-gray-700 dark:text-gray-200">
-                                        <thead className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 text-green-900 dark:text-green-100 uppercase tracking-wide text-xs">
-                                            <tr>
-                                                <th className={`px-4 py-3 font-semibold border-b border-green-100/70 dark:border-green-900/40 ${isRTL ? 'text-right' : 'text-left'}`}>
-                                                    {t('dashboard.schedule.workDay')}
-                                                </th>
-                                                <th className="px-4 py-3 font-semibold border-b border-green-100/70 dark:border-green-900/40 text-center">
-                                                    {t('common.actions')}
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {schedules.map(schedule => (
-                                                <tr
-                                                    key={schedule.id}
-                                                    className="odd:bg-white even:bg-green-50/40 dark:odd:bg-gray-900/60 dark:even:bg-gray-900/40 hover:bg-green-100/40 dark:hover:bg-green-900/30 transition-colors"
-                                                >
-                                                    <td className={`px-4 py-4 ${isRTL ? 'text-right' : 'text-left'}`}>
-                                                        <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                                                            <div className="w-8 h-8 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center flex-shrink-0">
-                                                                <CalendarIcon className="w-4 h-4 text-green-600 dark:text-green-300" />
-                                                            </div>
-                                                            <span className="font-semibold text-gray-800 dark:text-gray-100">
-                                                                {getDayName(schedule.day_of_week)}
-                                                            </span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-4 py-4">
-                                                        <div className={`flex justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
-                                                            <ActionButtons
-                                                                onDelete={() => handleDeleteDayClick(schedule.id)}
-                                                                showEdit={false}
-                                                                size="sm"
-                                                            />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                            {schedules.length === 0 && (
-                                                <tr>
-                                                    <td colSpan={2} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                                                        <CalendarIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                                                        <p>{t('dashboard.schedule.noDays')}</p>
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </tbody>
-                                    </table>
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                            {getDayName(schedule.day_of_week)}
+                                        </p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            {schedule.day_of_week}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className={`flex justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+                                    <ActionButtons
+                                        onDelete={() => handleDeleteDayClick(schedule.id)}
+                                        showEdit={false}
+                                        size="sm"
+                                    />
                                 </div>
                             </div>
-                        </>
-                    )}
+                        )}
+                    />
                 </CardContent>
             </Card>
 

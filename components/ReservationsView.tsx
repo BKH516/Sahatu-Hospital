@@ -6,6 +6,7 @@ import { CalendarIcon, ClockIcon, UserIcon, CheckCircleIcon, XCircleIcon, AlertC
 import { getPendingReservations, confirmReservation, cancelReservation, Reservation } from '../services/statsService';
 import { showToast } from '../utils';
 import ConfirmDialog from './ui/ConfirmDialog';
+import EnhancedTable, { EnhancedTableColumn } from './ui/EnhancedTable';
 
 const ReservationsView: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -70,6 +71,96 @@ const ReservationsView: React.FC = () => {
     }
   };
 
+  const formatDate = (value: string) =>
+    new Date(value).toLocaleDateString(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+  const reservationColumns: EnhancedTableColumn<Reservation>[] = [
+    {
+      id: 'patient',
+      header: t('reservations.patient'),
+      minWidth: '16rem',
+      align: isRTL ? 'right' : 'left',
+      render: (reservation) => (
+        <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
+          <div className="w-10 h-10 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 flex items-center justify-center">
+            <UserIcon className="w-5 h-5 text-purple-600 dark:text-purple-300" />
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              {reservation.user_name}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              ID: {reservation.id}
+            </p>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'service',
+      header: t('reservations.service'),
+      minWidth: '16rem',
+      align: isRTL ? 'right' : 'left',
+      render: (reservation) => (
+        <div className={`space-y-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{reservation.service_name}</p>
+          <span className="text-xs font-semibold text-purple-600 dark:text-purple-300">
+            {reservation.price} {t('dashboard.services.currency')}
+          </span>
+        </div>
+      )
+    },
+    {
+      id: 'start',
+      header: t('reservations.startDate'),
+      minWidth: '12rem',
+      render: (reservation) => (
+        <span className="text-sm text-gray-700 dark:text-gray-300">{formatDate(reservation.start_date)}</span>
+      )
+    },
+    {
+      id: 'end',
+      header: t('reservations.endDate'),
+      minWidth: '12rem',
+      render: (reservation) => (
+        <span className="text-sm text-gray-700 dark:text-gray-300">{formatDate(reservation.end_date)}</span>
+      )
+    },
+    {
+      id: 'actions',
+      header: t('common.actions'),
+      align: 'center',
+      minWidth: '14rem',
+      className: 'whitespace-nowrap',
+      render: (reservation) => (
+        <div className={`flex items-center justify-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <Button
+            onClick={() => handleConfirmClick(reservation.id)}
+            section="services"
+            size="sm"
+            className={`text-xs gap-2 rounded-full px-4 ${isRTL ? 'flex-row-reverse' : ''}`}
+          >
+            <CheckCircleIcon className="w-4 h-4" />
+            {t('reservations.confirm')}
+          </Button>
+          <Button
+            onClick={() => handleCancelClick(reservation.id)}
+            variant="outline"
+            size="sm"
+            className={`text-xs gap-2 rounded-full border-red-200 text-red-600 hover:text-red-700 hover:bg-red-50 dark:border-red-500/30 dark:text-red-300 dark:hover:bg-red-900/20 ${isRTL ? 'flex-row-reverse' : ''}`}
+          >
+            <XCircleIcon className="w-4 h-4" />
+            {t('reservations.cancel')}
+          </Button>
+        </div>
+      )
+    }
+  ];
+
   return (
     <div className="space-y-6 w-full max-w-6xl mx-auto px-2 sm:px-0">
       {error && (
@@ -94,14 +185,14 @@ const ReservationsView: React.FC = () => {
       )}
 
       <Card className="w-full">
-        <CardHeader>
-          <div className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between ${isRTL ? 'sm:flex-row-reverse text-right' : ''}`}>
-            <div className="space-y-1">
-              <CardTitle className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse justify-end' : ''}`}>
+        <CardHeader className="border-b border-slate-200/80 dark:border-slate-700/60 pb-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+            <div className="flex-1 space-y-1.5 lg:min-w-0 text-left">
+              <CardTitle className="flex items-center gap-2 text-xl font-semibold text-slate-900 dark:text-slate-100 justify-start">
                 <CalendarIcon className="w-5 h-5 text-purple-600" />
                 {t('reservations.pendingTitle')}
               </CardTitle>
-              <CardDescription className={isRTL ? 'text-right' : ''}>
+              <CardDescription className="text-sm text-slate-500 dark:text-slate-400 text-left">
                 {t('reservations.pendingDescription')}
               </CardDescription>
             </div>
@@ -110,7 +201,7 @@ const ReservationsView: React.FC = () => {
               disabled={loading}
               variant="outline"
               size="sm"
-              className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
+              className={`w-full sm:w-auto flex items-center gap-2 rounded-full px-4 h-10 self-start lg:ml-auto ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}
             >
               {loading ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
@@ -124,203 +215,82 @@ const ReservationsView: React.FC = () => {
           </div>
         </CardHeader>
         <CardContent>
-          {loading ? (
-            <div className="flex items-center justify-center p-8">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-                <p className="text-gray-600 dark:text-gray-400">{t('reservations.loading')}</p>
-              </div>
-            </div>
-          ) : (
-            <>
-              {/* Mobile View - Cards */}
-              <div className="block md:hidden space-y-4 w-full">
-                {reservations.map((reservation) => (
-                  <Card
-                    key={reservation.id}
-                    className="w-full border border-purple-200 dark:border-purple-500/40 rounded-xl shadow-sm bg-white/85 dark:bg-gray-800/70 backdrop-blur"
+          <EnhancedTable<Reservation>
+            data={reservations}
+            columns={reservationColumns}
+            getRowId={(reservation) => reservation.id}
+            isRTL={isRTL}
+            tone="purple"
+            primaryColumnId="patient"
+            loading={loading}
+            loadingLabel={t('reservations.loading')}
+            emptyState={{
+              icon: <AlertCircleIcon className="w-10 h-10 text-purple-400" />,
+              title: t('reservations.noPending'),
+              description: t('reservations.pendingDescription')
+            }}
+            renderMobileCard={(reservation) => (
+              <div className="p-5 space-y-5">
+                <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 flex items-center justify-center">
+                    <UserIcon className="w-6 h-6 text-purple-600 dark:text-purple-300" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      {reservation.user_name}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      #{reservation.id}
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 gap-3">
+                  <div className="rounded-2xl border border-purple-100/70 dark:border-purple-500/30 bg-gradient-to-br from-purple-50/70 via-violet-50/50 to-indigo-50/50 dark:from-purple-900/30 dark:via-violet-900/20 dark:to-indigo-900/20 p-4 space-y-2">
+                    <p className={`text-xs font-semibold uppercase tracking-wide text-purple-600 dark:text-purple-300 ${isRTL ? 'text-right' : ''}`}>
+                      {t('reservations.service')}
+                    </p>
+                    <p className={`text-sm font-medium text-gray-900 dark:text-gray-100 ${isRTL ? 'text-right' : ''}`}>
+                      {reservation.service_name}
+                    </p>
+                    <p className={`text-sm font-semibold text-purple-600 dark:text-purple-300 ${isRTL ? 'text-right' : ''}`}>
+                      {reservation.price} {t('dashboard.services.currency')}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-indigo-100/70 dark:border-indigo-500/30 bg-gradient-to-br from-indigo-50/70 via-slate-50/50 to-sky-50/50 dark:from-indigo-900/30 dark:via-slate-900/20 dark:to-sky-900/20 p-4 space-y-2">
+                    <p className={`text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-indigo-300 ${isRTL ? 'text-right' : ''}`}>
+                      {`${t('reservations.startDate')} / ${t('reservations.endDate')}`}
+                    </p>
+                    <p className={`text-sm text-gray-700 dark:text-gray-300 ${isRTL ? 'text-right' : ''}`}>
+                      {t('reservations.from')}: {formatDate(reservation.start_date)}
+                    </p>
+                    <p className={`text-sm text-gray-700 dark:text-gray-300 ${isRTL ? 'text-right' : ''}`}>
+                      {t('reservations.to')}: {formatDate(reservation.end_date)}
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 gap-2 pt-1">
+                  <Button
+                    onClick={() => handleConfirmClick(reservation.id)}
+                    section="services"
+                    size="sm"
+                    className={`w-full justify-center text-sm gap-2 rounded-full ${isRTL ? 'flex-row-reverse' : ''}`}
                   >
-                    <CardContent className="p-5 space-y-5 text-center">
-                      <div className="space-y-3">
-                        <div className="flex justify-center">
-                          <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shadow-inner">
-                            <UserIcon className="w-6 h-6 text-purple-600 dark:text-purple-300" />
-                          </div>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-purple-500 dark:text-purple-300">
-                            {t('reservations.patient')}
-                          </p>
-                          <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            {reservation.user_name}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 gap-3 text-sm">
-                        <div className="rounded-xl border border-purple-100 dark:border-purple-500/30 bg-purple-50/40 dark:bg-purple-900/20 p-3 space-y-2">
-                          <div className="flex justify-center">
-                            <div className="w-10 h-10 rounded-full bg-purple-200/70 dark:bg-purple-800/40 flex items-center justify-center">
-                              <CalendarIcon className="w-5 h-5 text-purple-600 dark:text-purple-300" />
-                            </div>
-                          </div>
-                          <p className="text-xs font-semibold uppercase tracking-wide text-purple-500 dark:text-purple-300">
-                            {t('reservations.service')}
-                          </p>
-                          <p className="font-medium text-gray-900 dark:text-gray-100">
-                            {reservation.service_name}
-                          </p>
-                          <p className="text-sm font-bold text-purple-600 dark:text-purple-300">
-                            {reservation.price} {t('dashboard.services.currency')}
-                          </p>
-                        </div>
-
-                        <div className="rounded-xl border border-indigo-100 dark:border-indigo-500/30 bg-indigo-50/40 dark:bg-indigo-900/20 p-3 space-y-2">
-                          <div className="flex justify-center">
-                            <div className="w-10 h-10 rounded-full bg-indigo-200/70 dark:bg-indigo-800/40 flex items-center justify-center">
-                              <ClockIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
-                            </div>
-                          </div>
-                          <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500 dark:text-indigo-300">
-                            {`${t('reservations.startDate')} / ${t('reservations.endDate')}`}
-                          </p>
-                          <div className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
-                            <p>
-                              {t('reservations.from')}: {new Date(reservation.start_date).toLocaleDateString(i18n.language === 'ar' ? 'ar-EG' : 'en-US', { month: 'short', day: 'numeric' })}
-                            </p>
-                            <p>
-                              {t('reservations.to')}: {new Date(reservation.end_date).toLocaleDateString(i18n.language === 'ar' ? 'ar-EG' : 'en-US', { month: 'short', day: 'numeric' })}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 gap-2 pt-2">
-                        <Button
-                          onClick={() => handleConfirmClick(reservation.id)}
-                          section="services"
-                          size="sm"
-                          className={`w-full justify-center text-sm gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
-                        >
-                          <CheckCircleIcon className="w-4 h-4" />
-                          {t('reservations.confirm')}
-                        </Button>
-                        <Button
-                          onClick={() => handleCancelClick(reservation.id)}
-                          variant="outline"
-                          size="sm"
-                          className={`w-full justify-center text-sm gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 ${isRTL ? 'flex-row-reverse' : ''}`}
-                        >
-                          <XCircleIcon className="w-4 h-4" />
-                          {t('reservations.cancel')}
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {/* Desktop View - Table */}
-              <div className="hidden md:block">
-                <div className="w-full max-w-6xl mx-auto overflow-x-auto rounded-2xl border border-purple-100 dark:border-purple-900/40 bg-white/90 dark:bg-gray-900/60 shadow-sm shadow-purple-100/50">
-                  <table className="min-w-[60rem] w-full text-sm text-gray-700 dark:text-gray-200">
-                    <thead className="bg-gradient-to-r from-purple-50 via-violet-50 to-indigo-50 dark:from-purple-900/20 dark:via-violet-900/20 dark:to-indigo-900/20 text-purple-900 dark:text-purple-100 uppercase tracking-wide text-xs">
-                      <tr>
-                        <th className={`px-4 py-3 font-semibold border-b border-purple-100/70 dark:border-purple-900/40 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
-                          {t('reservations.patient')}
-                        </th>
-                        <th className={`px-4 py-3 font-semibold border-b border-purple-100/70 dark:border-purple-900/40 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
-                          {t('reservations.service')}
-                        </th>
-                        <th className={`px-4 py-3 font-semibold border-b border-purple-100/70 dark:border-purple-900/40 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
-                          {t('reservations.price')}
-                        </th>
-                        <th className={`px-4 py-3 font-semibold border-b border-purple-100/70 dark:border-purple-900/40 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
-                          {t('reservations.startDate')}
-                        </th>
-                        <th className={`px-4 py-3 font-semibold border-b border-purple-100/70 dark:border-purple-900/40 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
-                          {t('reservations.endDate')}
-                        </th>
-                        <th className="px-4 py-3 font-semibold border-b border-purple-100/70 dark:border-purple-900/40 text-center">
-                          {t('common.actions')}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {reservations.map((reservation) => (
-                        <tr
-                          key={reservation.id}
-                          className="odd:bg-white even:bg-purple-50/40 dark:odd:bg-gray-900/60 dark:even:bg-gray-900/40 hover:bg-purple-100/40 dark:hover:bg-purple-900/30 transition-colors"
-                        >
-                          <td className="px-4 py-4 font-medium text-gray-900 dark:text-gray-100">
-                            {reservation.user_name}
-                          </td>
-                          <td className="px-4 py-4 text-gray-700 dark:text-gray-300">
-                            {reservation.service_name}
-                          </td>
-                          <td className="px-4 py-4 font-semibold text-purple-600 dark:text-purple-300">
-                            {reservation.price}
-                          </td>
-                          <td className="px-4 py-4 text-gray-700 dark:text-gray-300">
-                            {new Date(reservation.start_date).toLocaleDateString(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })}
-                          </td>
-                          <td className="px-4 py-4 text-gray-700 dark:text-gray-300">
-                            {new Date(reservation.end_date).toLocaleDateString(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })}
-                          </td>
-                          <td className="px-4 py-4">
-                            <div className={`flex items-center justify-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                              <Button
-                                onClick={() => handleConfirmClick(reservation.id)}
-                                section="services"
-                                size="sm"
-                                className={`text-xs gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
-                              >
-                                <CheckCircleIcon className="w-4 h-4" />
-                                {t('reservations.confirm')}
-                              </Button>
-                              <Button
-                                onClick={() => handleCancelClick(reservation.id)}
-                                variant="outline"
-                                size="sm"
-                                className={`text-xs gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 ${isRTL ? 'flex-row-reverse' : ''}`}
-                              >
-                                <XCircleIcon className="w-4 h-4" />
-                                {t('reservations.cancel')}
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                      {reservations.length === 0 && (
-                        <tr>
-                          <td colSpan={6} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                            <AlertCircleIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                            <p>{t('reservations.noPending')}</p>
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                    <CheckCircleIcon className="w-4 h-4" />
+                    {t('reservations.confirm')}
+                  </Button>
+                  <Button
+                    onClick={() => handleCancelClick(reservation.id)}
+                    variant="outline"
+                    size="sm"
+                    className={`w-full justify-center text-sm gap-2 rounded-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 ${isRTL ? 'flex-row-reverse' : ''}`}
+                  >
+                    <XCircleIcon className="w-4 h-4" />
+                    {t('reservations.cancel')}
+                  </Button>
                 </div>
               </div>
-
-              {/* Mobile Empty State */}
-              {reservations.length === 0 && (
-                <div className="block md:hidden text-center p-8">
-                  <AlertCircleIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                  <p className="text-gray-500 dark:text-gray-400">{t('reservations.noPending')}</p>
-                </div>
-              )}
-            </>
-          )}
+            )}
+          />
         </CardContent>
       </Card>
 
@@ -337,7 +307,7 @@ const ReservationsView: React.FC = () => {
         }
         confirmText={confirmDialog.type === 'confirm' ? t('reservations.confirm') : t('reservations.cancel')}
         cancelText={t('common.cancel')}
-        type={confirmDialog.type === 'confirm' ? 'success' : 'danger'}
+        type={confirmDialog.type === 'confirm' ? 'info' : 'danger'}
       />
     </div>
   );
