@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { registerHospital } from '../services/apiService';
+import { registerHospital, getProvinces, Province } from '../services/apiService';
 import { HospitalIcon } from './ui/icons';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
@@ -27,6 +27,23 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState('');
+  const [provinces, setProvinces] = useState<Province[]>([]);
+  const [loadingProvinces, setLoadingProvinces] = useState(false);
+
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      setLoadingProvinces(true);
+      try {
+        const data = await getProvinces();
+        setProvinces(data);
+      } catch (err) {
+        console.error('Failed to load provinces:', err);
+      } finally {
+        setLoadingProvinces(false);
+      }
+    };
+    fetchProvinces();
+  }, []);
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -242,9 +259,9 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
                         type="text"
                         required
                         placeholder="HOSP-001"
-                        pattern="[A-Z0-9\-]+"
+                        pattern="[A-Za-z0-9\-]+"
                         minLength={4}
-                        maxLength={20}
+                        maxLength={80}
                         title={t('auth.register.uniqueCodeTitle')}
                       />
                       <p className="mt-1 text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
@@ -298,6 +315,74 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
                     maxLength={200}
                     title={t('auth.register.addressTitle')}
                   />
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label htmlFor="province_id" className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                        {t('auth.register.province')}
+                      </label>
+                      <select
+                        id="province_id"
+                        name="province_id"
+                        required
+                        disabled={loadingProvinces}
+                        className="flex w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-xs sm:text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500"
+                      >
+                        <option value="">
+                          {loadingProvinces 
+                            ? (i18n.language === 'ar' ? 'جاري التحميل...' : 'Loading...')
+                            : t('auth.register.provincePlaceholder')
+                          }
+                        </option>
+                        {provinces.map((province) => (
+                          <option key={province.id} value={province.id}>
+                            {i18n.language === 'ar' ? province.name_ar : province.name_en}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <Input
+                        label={t('auth.register.reservationConfirmationDeadline')}
+                        name="reservation_confirmation_deadline"
+                        type="number"
+                        required
+                        placeholder={t('auth.register.reservationConfirmationDeadlinePlaceholder')}
+                        min="1"
+                        step="1"
+                        title={t('auth.register.reservationConfirmationDeadlineTitle')}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <Input
+                        label={t('auth.register.latitude')}
+                        name="latitude"
+                        type="number"
+                        required
+                        placeholder={t('auth.register.latitudePlaceholder')}
+                        min="-90"
+                        max="90"
+                        step="any"
+                        title={t('auth.register.latitudeTitle')}
+                      />
+                    </div>
+                    <div>
+                      <Input
+                        label={t('auth.register.longitude')}
+                        name="longitude"
+                        type="number"
+                        required
+                        placeholder={t('auth.register.longitudePlaceholder')}
+                        min="-180"
+                        max="180"
+                        step="any"
+                        title={t('auth.register.longitudeTitle')}
+                      />
+                    </div>
+                  </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="relative">

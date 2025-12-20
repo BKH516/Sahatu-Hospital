@@ -28,6 +28,7 @@ export const API_ENDPOINTS = {
   // Hospital Auth
   HOSPITAL_REGISTER: `${API_CONFIG.HOSPITAL_BASE}/register`,
   HOSPITAL_LOGIN: `${API_CONFIG.HOSPITAL_BASE}/login`,
+  HOSPITAL_REQUEST_LOGIN: `${API_CONFIG.HOSPITAL_BASE}/request-login`,
   HOSPITAL_LOGOUT: `${API_CONFIG.HOSPITAL_BASE}/logout`,
   HOSPITAL_ME: `${API_CONFIG.HOSPITAL_BASE}/me`,
   HOSPITAL_EDIT_PROFILE: `${API_CONFIG.HOSPITAL_BASE}/edit-profile`,
@@ -58,6 +59,9 @@ export const API_ENDPOINTS = {
   // Password Reset
   PASSWORD_FORGOT: '/password/forgot',
   PASSWORD_RESET: '/password/reset',
+  
+  // Provinces
+  HOSPITALS_PROVINCES: '/provinces',
 };
 
 // Storage keys

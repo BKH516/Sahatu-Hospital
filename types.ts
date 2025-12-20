@@ -17,6 +17,9 @@ export interface Hospital {
   account_id: number;
   full_name: string;
   address: string;
+  profile_image_path?: string | null;
+  reservation_confirmation_deadline?: number | null;
+  unique_code?: string | null;
   deleted_at: string | null;
   created_at: string;
   updated_at: string;

@@ -27,11 +27,22 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
     const { t, i18n } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
+    const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://sahtee.evra-co.com';
+    const [profileImagePreview, setProfileImagePreview] = useState<string | null>(
+        hospital?.profile_image_path ? `${baseUrl}/${hospital.profile_image_path}` : null
+    );
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         const formData = new FormData(e.currentTarget);
+        
+        // Handle profile image file
+        const imageInput = e.currentTarget.querySelector<HTMLInputElement>('input[type="file"][name="profile_image"]');
+        if (imageInput?.files?.[0]) {
+            formData.append('profile_image', imageInput.files[0]);
+        }
+        
         try {
             await api.updateProfile(formData);
             showToast.success(t('dashboard.profile.updateSuccess'));
@@ -43,6 +54,24 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
             setLoading(false);
         }
     };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfileImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    // Update preview when hospital data changes
+    useEffect(() => {
+        if (hospital?.profile_image_path) {
+            setProfileImagePreview(`${baseUrl}/${hospital.profile_image_path}`);
+        }
+    }, [hospital?.profile_image_path, baseUrl]);
     
     if (!hospital || !account) return (
         <div className="flex items-center justify-center p-8">
@@ -68,6 +97,32 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
                 <CardContent>
                 {isEditing ? (
                         <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* Profile Image */}
+                            <div>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    {t('dashboard.profile.profileImage')}
+                                </label>
+                                {profileImagePreview && (
+                                    <div className="mb-3">
+                                        <img 
+                                            src={profileImagePreview} 
+                                            alt="Profile preview" 
+                                            className="w-32 h-32 object-cover rounded-lg border-2 border-gray-300 dark:border-gray-600"
+                                        />
+                                    </div>
+                                )}
+                                <input
+                                    type="file"
+                                    name="profile_image"
+                                    accept="image/jpeg,image/jpg,image/png"
+                                    onChange={handleImageChange}
+                                    className="block w-full text-xs sm:text-sm text-gray-900 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 dark:file:bg-teal-900/40 dark:file:text-teal-300 dark:hover:file:bg-teal-900/60 file:cursor-pointer"
+                                />
+                                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                    {i18n.language === 'ar' ? 'JPEG, JPG, PNG (حد أقصى 10MB)' : 'JPEG, JPG, PNG (max 10MB)'}
+                                </p>
+                            </div>
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <Input
                                     label={t('dashboard.profile.hospitalName')}
@@ -87,6 +142,14 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
                                     defaultValue={account.phone_number}
                                     required
                                 />
+                                <Input
+                                    label={t('dashboard.profile.reservationConfirmationDeadline')}
+                                    name="reservation_confirmation_deadline"
+                                    type="number"
+                                    min="1"
+                                    defaultValue={hospital.reservation_confirmation_deadline?.toString() || ''}
+                                    placeholder={i18n.language === 'ar' ? 'مثال: 4' : 'Example: 4'}
+                                />
                         </div>
                         <div className="flex gap-4">
                                 <Button type="submit" disabled={loading} section="hospital">
@@ -99,6 +162,17 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
                     </form>
                 ) : (
                         <div className="space-y-6">
+                            {/* Profile Image Display */}
+                            {hospital.profile_image_path && (
+                                <div className="flex justify-center">
+                                    <img 
+                                        src={`${baseUrl}/${hospital.profile_image_path}`}
+                                        alt="Hospital profile" 
+                                        className="w-32 h-32 object-cover rounded-lg border-2 border-gray-300 dark:border-gray-600"
+                                    />
+                                </div>
+                            )}
+                            
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                     <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{t('dashboard.profile.hospitalName')}</h4>
@@ -116,6 +190,20 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
                                     <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{t('dashboard.profile.phone')}</h4>
                                     <p className="text-gray-600 dark:text-gray-300">{account.phone_number}</p>
                                 </div>
+                                {hospital.unique_code && (
+                                    <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                        <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{t('dashboard.profile.uniqueCode')}</h4>
+                                        <p className="text-gray-600 dark:text-gray-300">{hospital.unique_code}</p>
+                                    </div>
+                                )}
+                                {hospital.reservation_confirmation_deadline && (
+                                    <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                        <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{t('dashboard.profile.reservationConfirmationDeadline')}</h4>
+                                        <p className="text-gray-600 dark:text-gray-300">
+                                            {hospital.reservation_confirmation_deadline} {i18n.language === 'ar' ? 'ساعة' : 'hours'}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                 <div>

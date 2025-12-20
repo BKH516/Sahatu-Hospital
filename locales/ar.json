@@ -172,7 +172,18 @@
       "uniqueCodeTitle": "أدخل الرمز الذي استلمته من الإدارة",
       "emailTitle": "يرجى إدخال بريد إلكتروني صحيح",
       "phoneTitle": "يرجى إدخال رقم هاتف صحيح (أرقام فقط)",
-      "addressTitle": "يرجى إدخال عنوان كامل (10-200 حرف)"
+      "addressTitle": "يرجى إدخال عنوان كامل (10-200 حرف)",
+      "province": "المحافظة",
+      "provincePlaceholder": "اختر المحافظة",
+      "latitude": "خط العرض",
+      "longitude": "خط الطول",
+      "latitudePlaceholder": "مثال: 24.7136",
+      "longitudePlaceholder": "مثال: 46.6753",
+      "latitudeTitle": "يرجى إدخال خط عرض صحيح (-90 إلى 90)",
+      "longitudeTitle": "يرجى إدخال خط طول صحيح (-180 إلى 180)",
+      "reservationConfirmationDeadline": "مهلة تأكيد الحجز (بالساعات)",
+      "reservationConfirmationDeadlinePlaceholder": "مثال: 4",
+      "reservationConfirmationDeadlineTitle": "يرجى إدخال عدد الساعات لمهلة تأكيد الحجز"
     }
   },
   "dashboard": {
@@ -245,7 +256,10 @@
       "pending": "قيد الانتظار",
       "editProfile": "تعديل الملف الشخصي",
       "loading": "جاري تحميل بيانات الملف الشخصي...",
-      "updateSuccess": "تم تحديث الملف الشخصي بنجاح"
+      "updateSuccess": "تم تحديث الملف الشخصي بنجاح",
+      "profileImage": "صورة المستشفى",
+      "uniqueCode": "الكود الفريد",
+      "reservationConfirmationDeadline": "مهلة تأكيد الحجز (ساعات)"
     },
     "services": {
       "title": "إدارة الخدمات الطبية",

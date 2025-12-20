@@ -154,6 +154,30 @@ export const registerHospital = (data: FormData) => {
   });
 };
 
+export const requestLogin = (email: string) => {
+  // Check rate limit
+  if (!loginRateLimiter.canMakeRequest(email)) {
+    const waitTime = Math.ceil(loginRateLimiter.getTimeUntilNextRequest(email) / 1000);
+    throw new ApiError(
+      `لقد تجاوزت الحد الأقصى لمحاولات تسجيل الدخول. يرجى الانتظار ${waitTime} ثانية`,
+      429,
+      'RATE_LIMIT_EXCEEDED'
+    );
+  }
+
+  const formData = new FormData();
+  formData.append('email', email);
+
+  return fetchApi<{ message: string }>(API_ENDPOINTS.HOSPITAL_REQUEST_LOGIN, {
+    method: 'POST',
+    body: formData,
+  }).then(response => {
+    // Reset rate limit on successful request
+    loginRateLimiter.reset(email);
+    return response;
+  });
+};
+
 export const loginWithPassword = (data: FormData) => {
   const object: { [key: string]: any } = {};
   data.forEach((value, key) => {
@@ -208,6 +232,10 @@ export const getServices = (): Promise<HospitalService[]> => {
   return fetchApi<HospitalService[]>(API_ENDPOINTS.HOSPITAL_SERVICES, {}, []);
 };
 
+export const getServiceById = (id: number): Promise<HospitalService> => {
+  return fetchApi<HospitalService>(API_ENDPOINTS.HOSPITAL_SERVICE_BY_ID(id));
+};
+
 export const addService = (data: FormData) => {
   return fetchApi<HospitalService>(API_ENDPOINTS.HOSPITAL_SERVICES, {
     method: 'POST',
@@ -231,6 +259,10 @@ export const deleteService = (id: number): Promise<void> => {
 // Work Schedules with fallback
 export const getWorkSchedules = (): Promise<WorkSchedule[]> => {
   return fetchApi<WorkSchedule[]>(API_ENDPOINTS.HOSPITAL_WORK_SCHEDULES, {}, []);
+};
+
+export const getWorkScheduleById = (id: number): Promise<WorkSchedule> => {
+  return fetchApi<WorkSchedule>(API_ENDPOINTS.HOSPITAL_WORK_SCHEDULE_BY_ID(id));
 };
 
 export const addWorkSchedule = (day_of_week: string) => {
@@ -284,5 +316,56 @@ export const resetPassword = (email: string, code: string, password: string) => 
   return fetchApi<{ message: string }>(API_ENDPOINTS.PASSWORD_RESET, {
     method: 'POST',
     body: formData,
+  });
+};
+
+// Provinces
+export interface Province {
+  id: number;
+  name_ar: string;
+  name_en: string;
+}
+
+export const getProvinces = (): Promise<Province[]> => {
+  // Use fetchApi which handles token automatically (sends if exists, doesn't if not)
+  // If the endpoint requires auth, it will fail gracefully and return empty array
+  return fetchApi<Province[]>(API_ENDPOINTS.HOSPITALS_PROVINCES, {}, []);
+};
+
+// Reservations
+export interface Reservation {
+  id: number;
+  user_name: string;
+  service_name: string;
+  price: number;
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  start_date: string;
+  end_date: string;
+}
+
+export const getReservationById = (id: number): Promise<Reservation> => {
+  return fetchApi<Reservation>(API_ENDPOINTS.HOSPITAL_RESERVATIONS_BY_ID(id));
+};
+
+export const getTrashedReservations = (): Promise<Reservation[]> => {
+  return fetchApi<Reservation[]>(API_ENDPOINTS.HOSPITAL_RESERVATIONS_TRASHED, {}, []);
+};
+
+export const deleteReservation = (id: number): Promise<void> => {
+  return fetchApi(API_ENDPOINTS.HOSPITAL_RESERVATIONS_DELETE(id), { 
+    method: 'DELETE' 
+  });
+};
+
+export const restoreReservation = (id: number): Promise<Reservation> => {
+  return fetchApi<Reservation>(API_ENDPOINTS.HOSPITAL_RESERVATIONS_RESTORE(id), {
+    method: 'PATCH',
+  });
+};
+
+export const updateReservationStatus = (id: number, status: string, reason?: string): Promise<Reservation> => {
+  const endpoint = `${API_ENDPOINTS.HOSPITAL_RESERVATIONS_UPDATE_STATUS(id)}?status=${encodeURIComponent(status)}${reason ? `&reason=${encodeURIComponent(reason)}` : ''}`;
+  return fetchApi<Reservation>(endpoint, {
+    method: 'PATCH',
   });
 };

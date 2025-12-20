@@ -172,7 +172,18 @@
       "uniqueCodeTitle": "Enter the code you received from administration",
       "emailTitle": "Please enter a valid email address",
       "phoneTitle": "Please enter a valid phone number (numbers only)",
-      "addressTitle": "Please enter a complete address (10-200 characters)"
+      "addressTitle": "Please enter a complete address (10-200 characters)",
+      "province": "Province",
+      "provincePlaceholder": "Select province",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "latitudePlaceholder": "Example: 24.7136",
+      "longitudePlaceholder": "Example: 46.6753",
+      "latitudeTitle": "Please enter a valid latitude (-90 to 90)",
+      "longitudeTitle": "Please enter a valid longitude (-180 to 180)",
+      "reservationConfirmationDeadline": "Reservation Confirmation Deadline (hours)",
+      "reservationConfirmationDeadlinePlaceholder": "Example: 4",
+      "reservationConfirmationDeadlineTitle": "Please enter the number of hours for reservation confirmation deadline"
     }
   },
   "dashboard": {
@@ -245,7 +256,10 @@
       "pending": "Pending",
       "editProfile": "Edit Profile",
       "loading": "Loading profile data...",
-      "updateSuccess": "Profile updated successfully"
+      "updateSuccess": "Profile updated successfully",
+      "profileImage": "Hospital Image",
+      "uniqueCode": "Unique Code",
+      "reservationConfirmationDeadline": "Reservation Confirmation Deadline (hours)"
     },
     "services": {
       "title": "Medical Services Management",
