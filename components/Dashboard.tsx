@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Hospital, HospitalService, WorkSchedule, Account } from '../types';
 import * as api from '../services/apiService';
@@ -28,14 +28,38 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
     const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://sahtee.evra-co.com';
+    const [imageVersion, setImageVersion] = useState<number>(Date.now());
+    
+    // Helper function to build image URL
+    const getImageUrl = useCallback((imagePath: string | null | undefined): string | null => {
+        if (!imagePath) return null;
+        // If path already starts with http, use it as is
+        if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+            return `${imagePath}?v=${imageVersion}`;
+        }
+        // If path doesn't start with storage/, add it
+        const path = imagePath.startsWith('storage/') ? imagePath : `storage/${imagePath}`;
+        return `${baseUrl}/${path}?v=${imageVersion}`;
+    }, [baseUrl, imageVersion]);
+    
     const [profileImagePreview, setProfileImagePreview] = useState<string | null>(
-        hospital?.profile_image_path ? `${baseUrl}/${hospital.profile_image_path}` : null
+        hospital?.profile_image_path ? getImageUrl(hospital.profile_image_path) : null
     );
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         const formData = new FormData(e.currentTarget);
+        
+        // Check if phone number has changed - if not, remove it from formData to avoid unique constraint error
+        const phoneNumberInput = e.currentTarget.querySelector<HTMLInputElement>('input[name="phone_number"]');
+        const newPhoneNumber = phoneNumberInput?.value?.trim();
+        const originalPhoneNumber = account?.phone_number?.trim();
+        
+        if (newPhoneNumber === originalPhoneNumber) {
+            // Phone number hasn't changed, remove it from formData
+            formData.delete('phone_number');
+        }
         
         // Handle profile image file
         const imageInput = e.currentTarget.querySelector<HTMLInputElement>('input[type="file"][name="profile_image"]');
@@ -47,6 +71,8 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
             await api.updateProfile(formData);
             showToast.success(t('dashboard.profile.updateSuccess'));
             setIsEditing(false);
+            // Update image version to force browser to reload the image
+            setImageVersion(Date.now());
             refreshData();
         } catch (error: any) {
             showToast.error(`${t('common.error')}: ${error.message}`);
@@ -68,10 +94,8 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
 
     // Update preview when hospital data changes
     useEffect(() => {
-        if (hospital?.profile_image_path) {
-            setProfileImagePreview(`${baseUrl}/${hospital.profile_image_path}`);
-        }
-    }, [hospital?.profile_image_path, baseUrl]);
+        setProfileImagePreview(getImageUrl(hospital?.profile_image_path));
+    }, [hospital?.profile_image_path, getImageUrl]);
     
     if (!hospital || !account) return (
         <div className="flex items-center justify-center p-8">
@@ -86,7 +110,7 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
         <div className="space-y-6 w-full max-w-3xl mx-auto">
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 justify-start">
                         <UserIcon className="w-5 h-5 text-teal-600" />
                         {t('dashboard.profile.title')}
                     </CardTitle>
@@ -102,15 +126,24 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
                                 <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                     {t('dashboard.profile.profileImage')}
                                 </label>
-                                {profileImagePreview && (
-                                    <div className="mb-3">
+                                <div className="mb-3">
+                                    {profileImagePreview ? (
                                         <img 
                                             src={profileImagePreview} 
                                             alt="Profile preview" 
                                             className="w-32 h-32 object-cover rounded-lg border-2 border-gray-300 dark:border-gray-600"
                                         />
-                                    </div>
-                                )}
+                                    ) : (
+                                        <div className="w-32 h-32 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center bg-gray-50 dark:bg-gray-800">
+                                            <div className="text-center p-4">
+                                                <UserIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                    {i18n.language === 'ar' ? 'لا توجد صورة' : 'No image'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                                 <input
                                     type="file"
                                     name="profile_image"
@@ -163,15 +196,35 @@ const ProfileView: React.FC<{ hospital: Hospital | null; account: Account | null
                 ) : (
                         <div className="space-y-6">
                             {/* Profile Image Display */}
-                            {hospital.profile_image_path && (
-                                <div className="flex justify-center">
+                            <div className="flex justify-center">
+                                {getImageUrl(hospital.profile_image_path) ? (
                                     <img 
-                                        src={`${baseUrl}/${hospital.profile_image_path}`}
+                                        src={getImageUrl(hospital.profile_image_path)!}
                                         alt="Hospital profile" 
                                         className="w-32 h-32 object-cover rounded-lg border-2 border-gray-300 dark:border-gray-600"
+                                        key={imageVersion}
+                                        onError={(e) => {
+                                            // Fallback: try without storage/ prefix
+                                            const img = e.target as HTMLImageElement;
+                                            if (hospital?.profile_image_path && !hospital.profile_image_path.startsWith('storage/')) {
+                                                const fallbackUrl = `${baseUrl}/${hospital.profile_image_path}?v=${imageVersion}`;
+                                                if (img.src !== fallbackUrl) {
+                                                    img.src = fallbackUrl;
+                                                }
+                                            }
+                                        }}
                                     />
-                                </div>
-                            )}
+                                ) : (
+                                    <div className="w-32 h-32 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center bg-gray-50 dark:bg-gray-800">
+                                        <div className="text-center p-4">
+                                            <UserIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                {i18n.language === 'ar' ? 'لا توجد صورة شخصية' : 'No profile image'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
@@ -537,14 +590,27 @@ const ScheduleView: React.FC = () => {
         setError(null);
         try {
             const data = await api.getWorkSchedules();
-            setSchedules(data);
+            // Sort schedules by day of week order (Saturday to Friday)
+            const dayOrder = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+            const sortedData = [...data].sort((a, b) => {
+                // Normalize day names (trim whitespace and handle case sensitivity)
+                const dayAValue = a.day_of_week.trim();
+                const dayBValue = b.day_of_week.trim();
+                const dayA = dayOrder.findIndex(day => day.toLowerCase() === dayAValue.toLowerCase());
+                const dayB = dayOrder.findIndex(day => day.toLowerCase() === dayBValue.toLowerCase());
+                // Handle case where day is not found (shouldn't happen, but for safety)
+                if (dayA === -1) return 1;
+                if (dayB === -1) return -1;
+                return dayA - dayB;
+            });
+            setSchedules(sortedData);
         } catch (error) {
             setError(t('dashboard.schedule.fetchError'));
             setSchedules([]);
         } finally {
             setLoading(false);
         }
-    }, [i18n.language, t]);
+    }, [t]);
 
     useEffect(() => {
         fetchSchedules();
@@ -718,8 +784,8 @@ const ScheduleView: React.FC = () => {
 
             <Card className="w-full" dir={isRTL ? 'rtl' : 'ltr'}>
                 <CardHeader className="border-b border-slate-200/80 dark:border-slate-700/60 pb-6">
-                    <div className={`space-y-1.5 ${isRTL ? 'text-right' : 'text-left'}`}>
-                        <CardTitle className={`flex items-center gap-2 text-xl font-semibold text-slate-900 dark:text-slate-100 ${isRTL ? 'flex-row-reverse justify-end text-right' : 'justify-start text-left'}`}>
+                    <div className={`space-y-1.5 text-left`}>
+                        <CardTitle className="flex items-center gap-2 text-xl font-semibold text-slate-900 dark:text-slate-100 justify-start">
                             <CalendarIcon className="w-5 h-5 text-green-600" />
                             {t('dashboard.schedule.currentDays')}
                         </CardTitle>
