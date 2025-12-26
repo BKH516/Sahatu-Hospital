@@ -29,6 +29,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
   const [password, setPassword] = useState('');
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [loadingProvinces, setLoadingProvinces] = useState(false);
+  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProvinces = async () => {
@@ -37,7 +38,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
         const data = await getProvinces();
         setProvinces(data);
       } catch (err) {
-        console.error('Failed to load provinces:', err);
+        // Silently handle province loading error
       } finally {
         setLoadingProvinces(false);
       }
@@ -382,6 +383,41 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onAuthSuccess, onBack, onNa
                         title={t('auth.register.longitudeTitle')}
                       />
                     </div>
+                  </div>
+
+                  {/* Profile Image Upload */}
+                  <div>
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      {t('auth.register.profileImage')}
+                    </label>
+                    {profileImagePreview && (
+                      <div className="mb-3">
+                        <img 
+                          src={profileImagePreview} 
+                          alt="Profile preview" 
+                          className="w-32 h-32 object-cover rounded-lg border-2 border-gray-300 dark:border-gray-600"
+                        />
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      name="profile_image"
+                      accept="image/jpeg,image/jpg,image/png"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setProfileImagePreview(reader.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="block w-full text-xs sm:text-sm text-gray-900 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 dark:file:bg-teal-900/40 dark:file:text-teal-300 dark:hover:file:bg-teal-900/60 file:cursor-pointer"
+                    />
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      {t('auth.register.profileImageHelper')}
+                    </p>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

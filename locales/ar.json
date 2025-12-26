@@ -183,7 +183,9 @@
       "longitudeTitle": "يرجى إدخال خط طول صحيح (-180 إلى 180)",
       "reservationConfirmationDeadline": "مهلة تأكيد الحجز (بالساعات)",
       "reservationConfirmationDeadlinePlaceholder": "مثال: 4",
-      "reservationConfirmationDeadlineTitle": "يرجى إدخال عدد الساعات لمهلة تأكيد الحجز"
+      "reservationConfirmationDeadlineTitle": "يرجى إدخال عدد الساعات لمهلة تأكيد الحجز",
+      "profileImage": "الصورة الشخصية",
+      "profileImageHelper": "JPEG, JPG, PNG (حد أقصى 10MB)"
     }
   },
   "dashboard": {

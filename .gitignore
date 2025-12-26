@@ -42,3 +42,51 @@ coverage/
 .cache
 .temp
 .tmp
+
+# Postman Collections
+*.postman_collection.json
+
+# Documentation
+docs/
+
+# Windows user directories and system files
+AppData/
+3D Objects/
+Contacts/
+Desktop/
+Documents/
+Downloads/
+Favorites/
+IntelGraphicsProfiles/
+Links/
+Music/
+OneDrive/
+Pictures/
+Saved Games/
+Searches/
+Videos/
+NTUSER.DAT*
+ntuser.dat*
+ntuser.ini
+
+# User config files
+.aws/
+.bito/
+.bitowingman/
+.cache/
+.codeium/
+.config/
+.continue/
+.cursor/
+.esd_auth
+.gitconfig
+.lesshst
+.local/
+.npmrc
+.ollama/
+.pulse-cookie
+.pulse/
+.ssh/
+.th-client/
+.void-editor/
+.android/

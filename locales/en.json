@@ -183,7 +183,9 @@
       "longitudeTitle": "Please enter a valid longitude (-180 to 180)",
       "reservationConfirmationDeadline": "Reservation Confirmation Deadline (hours)",
       "reservationConfirmationDeadlinePlaceholder": "Example: 4",
-      "reservationConfirmationDeadlineTitle": "Please enter the number of hours for reservation confirmation deadline"
+      "reservationConfirmationDeadlineTitle": "Please enter the number of hours for reservation confirmation deadline",
+      "profileImage": "Profile Image",
+      "profileImageHelper": "JPEG, JPG, PNG (max 10MB)"
     }
   },
   "dashboard": {

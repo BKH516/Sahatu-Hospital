@@ -149,7 +149,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ onNavigate, userF
       <div className="grid grid-cols-1 gap-4 md:gap-8">
             <Card className="hover:shadow-lg transition-shadow duration-300 border-r-4 border-r-green-500">
           <CardHeader className="pb-3 md:pb-4">
-            <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+            <CardTitle className="flex items-center gap-2 text-base md:text-lg justify-start">
                   <ClockIcon className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
                   {t('dashboard.overview.workDays.title')}
             </CardTitle>
@@ -210,7 +210,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ onNavigate, userF
           <div className="grid grid-cols-1 gap-4 md:gap-8">
             <Card className="hover:shadow-lg transition-shadow duration-300 border-r-4 border-r-blue-500">
           <CardHeader className="pb-3 md:pb-4">
-            <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+            <CardTitle className="flex items-center gap-2 text-base md:text-lg justify-start">
                   <SettingsIcon className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
                   {t('dashboard.overview.services.title')}
             </CardTitle>
@@ -275,7 +275,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ onNavigate, userF
           <div className="grid grid-cols-1 gap-4 md:gap-8">
             <Card className="hover:shadow-lg transition-shadow duration-300 border-r-4 border-r-purple-500">
           <CardHeader className="pb-3 md:pb-4">
-            <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+            <CardTitle className="flex items-center gap-2 text-base md:text-lg justify-start">
                   <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
                   {t('dashboard.overview.reservations.title')}
             </CardTitle>

@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
       },
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, '.'),
+          '@': path.resolve(process.cwd(), '.'),
         }
       },
       css: {

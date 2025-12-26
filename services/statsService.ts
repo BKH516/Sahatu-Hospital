@@ -248,8 +248,18 @@ export const getDashboardStats = async (): Promise<DashboardStats> => {
     
     const totalCapacity = services.reduce((sum, s) => sum + (s.capacity || 0), 0);
 
-    // Get work days list
-    const workDaysList = workSchedules.map(ws => ws.day_of_week);
+    // Get work days list sorted by day of week order (Saturday to Friday)
+    const dayOrder = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    const workDaysList = workSchedules
+      .map(ws => ws.day_of_week)
+      .sort((a, b) => {
+        // Normalize day names to handle case sensitivity
+        const dayA = dayOrder.findIndex(day => day.toLowerCase() === a.toLowerCase());
+        const dayB = dayOrder.findIndex(day => day.toLowerCase() === b.toLowerCase());
+        if (dayA === -1) return 1;
+        if (dayB === -1) return -1;
+        return dayA - dayB;
+      });
 
     return {
       workDays: {
