@@ -123,6 +123,7 @@ const ReservationsView: React.FC = () => {
       )
     },
     {
+<<<<<<< HEAD
       id: 'end',
       header: t('reservations.endDate'),
       minWidth: '12rem',
@@ -131,6 +132,8 @@ const ReservationsView: React.FC = () => {
       )
     },
     {
+=======
+>>>>>>> c8d8f81 (Initial commit of Sahatu-Hospital project. Includes basic project structure and ignores common development artifacts.)
       id: 'actions',
       header: t('common.actions'),
       align: 'center',
@@ -258,6 +261,7 @@ const ReservationsView: React.FC = () => {
                   </div>
                   <div className="rounded-2xl border border-indigo-100/70 dark:border-indigo-500/30 bg-gradient-to-br from-indigo-50/70 via-slate-50/50 to-sky-50/50 dark:from-indigo-900/30 dark:via-slate-900/20 dark:to-sky-900/20 p-4 space-y-2">
                     <p className={`text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-indigo-300 ${isRTL ? 'text-right' : ''}`}>
+<<<<<<< HEAD
                       {`${t('reservations.startDate')} / ${t('reservations.endDate')}`}
                     </p>
                     <p className={`text-sm text-gray-700 dark:text-gray-300 ${isRTL ? 'text-right' : ''}`}>
@@ -265,6 +269,12 @@ const ReservationsView: React.FC = () => {
                     </p>
                     <p className={`text-sm text-gray-700 dark:text-gray-300 ${isRTL ? 'text-right' : ''}`}>
                       {t('reservations.to')}: {formatDate(reservation.end_date)}
+=======
+                      {t('reservations.startDate')}
+                    </p>
+                    <p className={`text-sm text-gray-700 dark:text-gray-300 ${isRTL ? 'text-right' : ''}`}>
+                      {formatDate(reservation.start_date)}
+>>>>>>> c8d8f81 (Initial commit of Sahatu-Hospital project. Includes basic project structure and ignores common development artifacts.)
                     </p>
                   </div>
                 </div>
