@@ -161,9 +161,6 @@ export const getPendingReservations = async (): Promise<Reservation[]> => {
 };
 
 // Confirm a reservation
-<<<<<<< HEAD
-export const confirmReservation = async (id: number): Promise<void> => {
-=======
 // Some backends require the reservation to be moved to "accepted" first,
 // then to "confirmed". We handle that flow here to avoid 422 errors.
 export const confirmReservation = async (id: number): Promise<void> => {
@@ -180,7 +177,6 @@ export const confirmReservation = async (id: number): Promise<void> => {
   }
 
   // Step 2: now confirm the reservation
->>>>>>> c8d8f81 (Initial commit of Sahatu-Hospital project. Includes basic project structure and ignores common development artifacts.)
   await updateReservationStatus(id, 'confirmed');
 };
 
